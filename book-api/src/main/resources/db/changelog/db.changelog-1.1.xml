@@ -1,0 +1,33 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet author="Rudy (generated)" id="mbook-001">
+        <createTable tableName="reservation">
+            <column name="version" type="BIGINT"/>
+            <column name="book_id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="reservation_pkey"/>
+            </column>
+            <column name="user_info_id" type="VARCHAR(255)">
+                <constraints primaryKey="true" primaryKeyName="reservation_pkey"/>
+            </column>
+            <column name="reservation_date" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="Rudy (generated)" id="mbook-002">
+        <addForeignKeyConstraint baseColumnNames="book_id" baseTableName="reservation"
+                                 constraintName="fk_reservation_book_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="book" validate="true"/>
+    </changeSet>
+
+    <changeSet author="Rudy (generated)" id="mbook-003">
+        <addForeignKeyConstraint baseColumnNames="user_info_id" baseTableName="reservation"
+                                 constraintName="fk_reservation_user_info_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="user_info" validate="true"/>
+    </changeSet>
+
+</databaseChangeLog>
