@@ -19,8 +19,8 @@ public class Reservation extends AbstractEntityComposedId {
     private ReservationId id;
 
     @CreationTimestamp
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
     private Date reservationDate;
 
