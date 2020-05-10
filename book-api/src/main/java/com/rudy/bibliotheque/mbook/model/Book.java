@@ -33,4 +33,10 @@ public class Book extends AbstractEntity {
 
     private Integer availableCopyNumber;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Temporal(TemporalType.DATE)
+    private Date nearestExpectedReturnDate;
+
+    private Integer reservationsNumber;
+
 }

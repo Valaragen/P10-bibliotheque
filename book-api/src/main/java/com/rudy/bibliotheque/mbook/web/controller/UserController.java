@@ -1,13 +1,10 @@
 package com.rudy.bibliotheque.mbook.web.controller;
 
 import com.rudy.bibliotheque.mbook.dto.LoanCreateDTO;
-import com.rudy.bibliotheque.mbook.model.Borrow;
-import com.rudy.bibliotheque.mbook.model.Copy;
-import com.rudy.bibliotheque.mbook.model.UserInfo;
+import com.rudy.bibliotheque.mbook.dto.ReservationCreateDTO;
+import com.rudy.bibliotheque.mbook.model.*;
 import com.rudy.bibliotheque.mbook.search.LoanSearch;
-import com.rudy.bibliotheque.mbook.service.BorrowService;
-import com.rudy.bibliotheque.mbook.service.CopyService;
-import com.rudy.bibliotheque.mbook.service.UserInfoService;
+import com.rudy.bibliotheque.mbook.service.*;
 import com.rudy.bibliotheque.mbook.util.Constant;
 import com.rudy.bibliotheque.mbook.web.controller.util.ControllerUtil;
 import com.rudy.bibliotheque.mbook.web.exception.CRUDIssueException;
@@ -34,12 +31,16 @@ import java.util.List;
 @RequestMapping(Constant.USERS_PATH)
 public class UserController {
 
+    private BookService bookService;
+    private ReservationService reservationService;
     private BorrowService borrowService;
     private CopyService copyService;
     private UserInfoService userInfoService;
 
     @Autowired
-    public UserController(BorrowService borrowService, CopyService copyService, UserInfoService userInfoService) {
+    public UserController(BookService bookService, ReservationService reservationService, BorrowService borrowService, CopyService copyService, UserInfoService userInfoService) {
+        this.bookService = bookService;
+        this.reservationService = reservationService;
         this.borrowService = borrowService;
         this.copyService = copyService;
         this.userInfoService = userInfoService;
@@ -77,18 +78,8 @@ public class UserController {
         log.debug("Copy linked to the loan");
         UserInfo linkedUserInfo = userInfoService.getUserInfoById(loanCreateDTO.getUserId());
         if (linkedUserInfo == null) {
-            //link the userInfos
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            KeycloakAuthenticationToken kp = (KeycloakAuthenticationToken) authentication;
-            AccessToken token = kp.getAccount().getKeycloakSecurityContext().getToken();
-
-            linkedUserInfo = new UserInfo();
-            linkedUserInfo.setId(token.getSubject());
-            linkedUserInfo.setUsername(token.getPreferredUsername());
-            linkedUserInfo.setEmail(token.getEmail());
-            linkedUserInfo.setFirstName(token.getGivenName());
-            linkedUserInfo.setLastName(token.getFamilyName());
-            linkedUserInfo.setPhone(token.getPhoneNumber());
+            //Create the userInfo in database
+            linkedUserInfo = UserController.getUserInfoFromToken();
             linkedUserInfo = userInfoService.saveUserInfo(linkedUserInfo);
             if (linkedUserInfo == null) {
                 throw new CRUDIssueException("Can't create user_info entity");
@@ -128,5 +119,69 @@ public class UserController {
         if(newLoan == null) throw new CRUDIssueException("Can't update the loan");
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    //TODO handle pending cancel
+    @PreAuthorize("hasRole('" + Constant.USER_ROLE_NAME + "')")
+    @PostMapping(Constant.CURRENT_PATH + Constant.RESERVATIONS_PATH)
+    public ResponseEntity<Reservation> createReservationForCurrentUser(@RequestBody ReservationCreateDTO reservationCreateDTO) {
+        log.info("Start method createReservationForCurrentUser");
+        reservationCreateDTO.setUserId(ControllerUtil.getUserIdFromToken());
+
+        if (reservationCreateDTO.getBookId() == null) {
+            throw new InvalidIdException("Book id has not been provided");
+        }
+
+        Book linkedBook = bookService.getBookById(reservationCreateDTO.getBookId());
+        if (linkedBook == null) {
+            throw new NotFoundException("No book with id " + reservationCreateDTO.getBookId());
+        }
+        if (linkedBook.getCopyNumber() == 0) {
+            throw new ProhibitedActionException("This book got no copy to reserve");
+        }
+        if (linkedBook.getAvailableCopyNumber() > 0) {
+            throw new ProhibitedActionException("Reservations are only available when all copies of the book are currently borrowed");
+        }
+        if (linkedBook.getReservationsNumber() >= (2 * linkedBook.getCopyNumber())) {
+            throw new ProhibitedActionException("The max number of concurrent reservations has been reached");
+        }
+        linkedBook.setReservationsNumber(linkedBook.getReservationsNumber() + 1);
+
+        Reservation reservation = new Reservation();
+        reservation.getId().setBook(linkedBook);
+        log.debug("Book linked to the reservation");
+        UserInfo linkedUserInfo = userInfoService.getUserInfoById(reservationCreateDTO.getUserId());
+        if (linkedUserInfo == null) {
+            //Create the userInfo in database
+            linkedUserInfo = UserController.getUserInfoFromToken();
+            linkedUserInfo = userInfoService.saveUserInfo(linkedUserInfo);
+            if (linkedUserInfo == null) {
+                throw new CRUDIssueException("Can't create user_info entity");
+            }
+        }
+
+        reservation.getId().setUserInfo(linkedUserInfo);
+        log.debug("User linked to the reservation");
+
+        Reservation newReservation = reservationService.saveReservation(reservation);
+        if (newReservation == null) throw new CRUDIssueException("Can't' create reservation");
+
+        log.info("Method ended");
+        return new ResponseEntity<>(newReservation, HttpStatus.CREATED);
+    }
+
+    public static UserInfo getUserInfoFromToken() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        KeycloakAuthenticationToken kp = (KeycloakAuthenticationToken) authentication;
+        AccessToken token = kp.getAccount().getKeycloakSecurityContext().getToken();
+
+        UserInfo userInfo = new UserInfo();
+        userInfo.setId(token.getSubject());
+        userInfo.setUsername(token.getPreferredUsername());
+        userInfo.setEmail(token.getEmail());
+        userInfo.setFirstName(token.getGivenName());
+        userInfo.setLastName(token.getFamilyName());
+        userInfo.setPhone(token.getPhoneNumber());
+        return userInfo;
     }
 }

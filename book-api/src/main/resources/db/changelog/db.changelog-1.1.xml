@@ -3,7 +3,7 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
-    <changeSet author="Rudy (generated)" id="mbook-001">
+    <changeSet author="Rudy Boinnard" id="mbook-001">
         <createTable tableName="reservation">
             <column name="version" type="BIGINT"/>
             <column name="book_id" type="BIGINT">
@@ -16,18 +16,25 @@
         </createTable>
     </changeSet>
 
-    <changeSet author="Rudy (generated)" id="mbook-002">
+    <changeSet author="Rudy Boinnard" id="mbook-002">
         <addForeignKeyConstraint baseColumnNames="book_id" baseTableName="reservation"
                                  constraintName="fk_reservation_book_id" deferrable="false"
                                  initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
                                  referencedColumnNames="id" referencedTableName="book" validate="true"/>
     </changeSet>
 
-    <changeSet author="Rudy (generated)" id="mbook-003">
+    <changeSet author="Rudy Boinnard" id="mbook-003">
         <addForeignKeyConstraint baseColumnNames="user_info_id" baseTableName="reservation"
                                  constraintName="fk_reservation_user_info_id" deferrable="false"
                                  initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
                                  referencedColumnNames="id" referencedTableName="user_info" validate="true"/>
+    </changeSet>
+
+    <changeSet id="mbook-004" author="Rudy Boinnard">
+        <addColumn tableName="book">
+            <column name="nearest_expected_return_date" type="date"/>
+            <column name="reservation_number" type="INTEGER"/>
+        </addColumn>
     </changeSet>
 
 </databaseChangeLog>

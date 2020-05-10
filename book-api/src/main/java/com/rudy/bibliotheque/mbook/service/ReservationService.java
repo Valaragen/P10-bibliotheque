@@ -28,6 +28,10 @@ public class ReservationService {
         return reservationRepository.findAllBySearch(reservationSearch);
     }
 
+    public List<Reservation> getAllReservationsByBookId(Long id) {
+        return reservationRepository.findAllByIdBookId(id);
+    }
+
     public Reservation getReservationById(Long id) {
         return reservationRepository.findById(id).orElse(null);
     }

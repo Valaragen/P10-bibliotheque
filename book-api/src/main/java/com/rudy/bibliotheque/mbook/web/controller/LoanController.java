@@ -182,7 +182,7 @@ public class LoanController {
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(today);
-        calendar.add(Calendar.DATE, 1);
+        calendar.add(Calendar.DATE, 2);
         borrow.setDeadlineToRetrieve(calendar.getTime());
     }
 
