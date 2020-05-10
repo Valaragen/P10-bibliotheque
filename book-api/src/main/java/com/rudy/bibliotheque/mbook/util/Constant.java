@@ -20,6 +20,7 @@ public class Constant {
     public static final String BOOKS_PATH = "/books";
     public static final String LOANS_PATH = "/loans";
     public static final String COPIES_PATH = "/copies";
+    public static final String RESERVATIONS_PATH = "/reservations";
 
     public static final String EXTEND_PATH = "/extend";
     public static final String VALIDATE_PATH = "/validate";
