@@ -25,6 +25,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -109,7 +114,7 @@ public class UserController {
 
     @PreAuthorize("hasRole('" + Constant.USER_ROLE_NAME + "')")
     @PutMapping(Constant.CURRENT_PATH + Constant.LOANS_PATH + Constant.SLASH_ID_PATH + Constant.EXTEND_PATH)
-    public ResponseEntity<Borrow> extendMyLoan(@PathVariable Long id) {
+    public ResponseEntity<Borrow> extendMyLoan(@PathVariable Long id) throws ParseException {
         String tokenSubjectId = ControllerUtil.getUserIdFromToken();
         Borrow currentLoan = borrowService.getLoanById(id);
         if(currentLoan == null) {
@@ -118,6 +123,15 @@ public class UserController {
         if (!tokenSubjectId.equals(currentLoan.getUserInfo().getId())) {
             log.warn("user with id " + tokenSubjectId + " tried to extend a loan he does not have");
             throw new ProhibitedActionException("Prohibited action");
+        }
+        if (currentLoan.isHasDurationExtended()) {
+            throw new ProhibitedActionException("Can't extend duration twice");
+        }
+        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        Date today = new Date();
+        Date todayWithZeroTime = formatter.parse(formatter.format(today));
+        if (currentLoan.getLoanEndDate().before(todayWithZeroTime)) {
+            throw new ProhibitedActionException("Can't extend duration when the loan end date has passed");
         }
 
         long loanTimeInTimestamp = (currentLoan.getLoanEndDate().getTime() - currentLoan.getLoanStartDate().getTime());

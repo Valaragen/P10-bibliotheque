@@ -44,24 +44,24 @@
                 <td th:text="${#dates.format(ongoingLoan.loanStartDate, 'dd/MM/yyyy')}"></td>
                 <td>
                     <span th:text="${#dates.format(ongoingLoan.loanEndDate, 'dd/MM/yyyy')}"></span>
-                    <i th:if="${ongoingLoan.loanEndDate.before(#dates.createNow())}"
+                    <i th:if="${ongoingLoan.loanEndDate.before(#dates.createToday())}"
                        class="fas fa-exclamation-triangle text-danger" data-container="body"
                        data-toggle="popover" data-placement="top" data-trigger="hover"
                        data-content="Date de rendu dépassée."></i>
                 </td>
                 <td>
-                    <form th:id="${'loan-extend-' + ongoingLoan.id}" th:unless="${ongoingLoan.hasDurationExtended}"
+                    <form th:id="${'loan-extend-' + ongoingLoan.id}" th:unless="${ongoingLoan.hasDurationExtended || ongoingLoan.loanEndDate.before(#dates.createToday())}"
                           th:action="@{/loans/{id}/extend(id = ${ongoingLoan.id})}" method="POST">
                         <button class="btn btn-primary" type="submit" data-container="body"
                                 data-toggle="popover" data-placement="left" data-trigger="hover"
-                                data-content="Prolonger le prêt en cours. Le prêt n’est prolongeable qu’une seule fois. La prolongation double la période de prêt initiale.">
+                                data-content="Prolonger le prêt en cours. Le prêt n’est prolongeable qu’une seule fois et doit être effectué avant la date de rendu. La prolongation double la période de prêt initiale.">
                             <i class="fas fa-clock"></i>
                         </button>
                     </form>
-                    <span class="d-inline-block" th:if="${ongoingLoan.hasDurationExtended}"
+                    <span class="d-inline-block" th:if="${ongoingLoan.hasDurationExtended || ongoingLoan.loanEndDate.before(#dates.createToday())}"
                           data-container="body" data-toggle="popover"
                           data-placement="left" data-trigger="hover"
-                          data-content="L'emprunt à déjà été prolongé.">
+                          th:attr="data-content=${ongoingLoan.hasDurationExtended ? 'L''emprunt à déjà été prolongé.' : 'Vous ne pouvez pas prolonger un emprunt une fois la date de rendu dépassée'}">
                 <button class="btn btn-primary" type="button"
                         style="pointer-events: none;" disabled>
                     <i class="fas fa-clock"></i>
