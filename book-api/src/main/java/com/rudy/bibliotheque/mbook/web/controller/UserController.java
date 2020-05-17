@@ -135,7 +135,6 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    //TODO handle pending cancel
     @PreAuthorize("hasRole('" + Constant.USER_ROLE_NAME + "')")
     @PostMapping(Constant.CURRENT_PATH + Constant.RESERVATIONS_PATH)
     public ResponseEntity<Reservation> createReservationForCurrentUser(@RequestBody ReservationCreateDTO reservationCreateDTO) {
@@ -156,13 +155,18 @@ public class UserController {
         if (linkedBook.getAvailableCopyNumber() > 0) {
             throw new ProhibitedActionException("Reservations are only available when all copies of the book are currently borrowed");
         }
-        if (linkedBook.getReservationsNumber() >= (2 * linkedBook.getCopyNumber())) {
+        if (linkedBook.getOngoingReservations().size() >= (2 * linkedBook.getCopyNumber())) {
+            log.debug(String.valueOf(linkedBook.getOngoingReservations().size()));
             throw new ProhibitedActionException("The max number of concurrent reservations has been reached");
         }
-        linkedBook.setReservationsNumber(linkedBook.getReservationsNumber() + 1);
+        boolean hasAlreadyAReservation = linkedBook.getOngoingReservations().stream()
+                .map(Reservation::getUserInfo).anyMatch(userInfo -> userInfo.getId().equals(getCurrentUserIdFromToken()));
+        if (hasAlreadyAReservation) {
+            throw new ProhibitedActionException("You can't reserve the same book twice");
+        }
 
         Reservation reservation = new Reservation();
-        reservation.getId().setBook(linkedBook);
+        reservation.setBook(linkedBook);
         log.debug("Book linked to the reservation");
         UserInfo linkedUserInfo = userInfoService.getUserInfoById(reservationCreateDTO.getUserId());
         if (linkedUserInfo == null) {
@@ -174,8 +178,10 @@ public class UserController {
             }
         }
 
-        reservation.getId().setUserInfo(linkedUserInfo);
+        reservation.setUserInfo(linkedUserInfo);
         log.debug("User linked to the reservation");
+
+        reservation.setStatus(Status.ONGOING);
 
         Reservation newReservation = reservationService.saveReservation(reservation);
         if (newReservation == null) throw new CRUDIssueException("Can't' create reservation");
@@ -197,5 +203,13 @@ public class UserController {
         userInfo.setLastName(token.getFamilyName());
         userInfo.setPhone(token.getPhoneNumber());
         return userInfo;
+    }
+
+    public static String getCurrentUserIdFromToken() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        KeycloakAuthenticationToken kp = (KeycloakAuthenticationToken) authentication;
+        AccessToken token = kp.getAccount().getKeycloakSecurityContext().getToken();
+
+        return token.getSubject();
     }
 }

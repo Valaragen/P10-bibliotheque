@@ -1,7 +1,7 @@
 package com.rudy.bibliotheque.mbook.model;
 
-import com.rudy.bibliotheque.mbook.model.common.AbstractEntityComposedId;
-import com.rudy.bibliotheque.mbook.model.id.ReservationId;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.rudy.bibliotheque.mbook.model.common.AbstractEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.CreationTimestamp;
@@ -13,15 +13,25 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
-public class Reservation extends AbstractEntityComposedId {
+public class Reservation extends AbstractEntity {
+    @JsonManagedReference
+    @ManyToOne
+    private Book book;
 
-    @EmbeddedId
-    private ReservationId id;
+    @ManyToOne
+    private UserInfo userInfo;
 
     @CreationTimestamp
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
-    private Date reservationDate;
+    private Date reservationStartDate;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date reservationEndDate;
+
+    @Column(nullable = false, length = 100)
+    private Status status;
 
 }

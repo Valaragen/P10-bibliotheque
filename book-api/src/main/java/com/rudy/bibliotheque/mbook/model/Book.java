@@ -1,12 +1,18 @@
 package com.rudy.bibliotheque.mbook.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.rudy.bibliotheque.mbook.model.common.AbstractEntity;
+import com.rudy.bibliotheque.mbook.util.Constant;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import org.hibernate.annotations.Filter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -33,10 +39,17 @@ public class Book extends AbstractEntity {
 
     private Integer availableCopyNumber;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Temporal(TemporalType.DATE)
-    private Date nearestExpectedReturnDate;
+    @JsonBackReference
+    @OneToMany(mappedBy = "book", fetch = FetchType.EAGER)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<Reservation> reservations;
 
-    private Integer reservationsNumber;
+    @JsonBackReference
+    @OneToMany(mappedBy = "book")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @Filter(name = "onlyOngoing", condition = "status = " + Constant.STATUS_ONGOING)
+    private Set<Reservation> ongoingReservations;
 
 }

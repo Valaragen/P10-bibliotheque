@@ -5,36 +5,32 @@
 
     <changeSet author="Rudy Boinnard" id="mbook-001">
         <createTable tableName="reservation">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="reservation_pkey"/>
+            </column>
             <column name="version" type="BIGINT"/>
-            <column name="book_id" type="BIGINT">
-                <constraints primaryKey="true" primaryKeyName="reservation_pkey"/>
+            <column name="book_id" type="BIGINT"/>
+            <column name="user_info_id" type="VARCHAR(255)"/>
+            <column name="status" type="BIGINT">
+                <constraints nullable="false"/>
             </column>
-            <column name="user_info_id" type="VARCHAR(255)">
-                <constraints primaryKey="true" primaryKeyName="reservation_pkey"/>
-            </column>
-            <column name="reservation_date" type="DATETIME"/>
+            <column name="reservation_start_date" type="DATETIME"/>
+            <column name="reservation_end_date" type="DATETIME"/>
         </createTable>
     </changeSet>
 
-    <changeSet author="Rudy Boinnard" id="mbook-002">
+    <changeSet author="Rudy Boinnard" id="mbook-010">
         <addForeignKeyConstraint baseColumnNames="book_id" baseTableName="reservation"
                                  constraintName="fk_reservation_book_id" deferrable="false"
                                  initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
                                  referencedColumnNames="id" referencedTableName="book" validate="true"/>
     </changeSet>
 
-    <changeSet author="Rudy Boinnard" id="mbook-003">
+    <changeSet author="Rudy Boinnard" id="mbook-011">
         <addForeignKeyConstraint baseColumnNames="user_info_id" baseTableName="reservation"
                                  constraintName="fk_reservation_user_info_id" deferrable="false"
                                  initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
                                  referencedColumnNames="id" referencedTableName="user_info" validate="true"/>
-    </changeSet>
-
-    <changeSet id="mbook-004" author="Rudy Boinnard">
-        <addColumn tableName="book">
-            <column name="nearest_expected_return_date" type="date"/>
-            <column name="reservation_number" type="INTEGER"/>
-        </addColumn>
     </changeSet>
 
 </databaseChangeLog>

@@ -29,11 +29,17 @@ public class Constant {
     public static final String NON_RETURNED_EXPIRED_LOANS_PATH = "/non-returned-and-expired";
     public static final String COPY_CODE_PATH = "/code";
 
-    //LOAN STATUS
-    public static final String LOAN_STATUS_PENDING = "pending";
-    public static final String LOAN_STATUS_ONGOING = "ongoing";
-    public static final String LOAN_STATUS_LATE = "late";
-    public static final String LOAN_STATUS_FINISHED = "finished";
+    //STATUS
+    public static final Long STATUS_PENDING_CODE = 1L;
+    public static final Long STATUS_ONGOING_CODE = 2L;
+    public static final Long STATUS_LATE_CODE = 3L;
+    public static final Long STATUS_FINISHED_CODE = 4L;
+    public static final Long STATUS_CANCELLED_CODE = 5L;
+    public static final String STATUS_PENDING = "pending";
+    public static final String STATUS_ONGOING = "ongoing";
+    public static final String STATUS_LATE = "late";
+    public static final String STATUS_FINISHED = "finished";
+    public static final String STATUS_CANCELLED = "cancelled";
 
     //MESSAGE
     //Validation

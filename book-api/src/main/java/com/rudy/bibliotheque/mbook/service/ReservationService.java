@@ -1,9 +1,7 @@
 package com.rudy.bibliotheque.mbook.service;
 
-import com.rudy.bibliotheque.mbook.model.Borrow;
 import com.rudy.bibliotheque.mbook.model.Reservation;
 import com.rudy.bibliotheque.mbook.repository.ReservationRepository;
-import com.rudy.bibliotheque.mbook.search.LoanSearch;
 import com.rudy.bibliotheque.mbook.search.ReservationSearch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,7 +27,7 @@ public class ReservationService {
     }
 
     public List<Reservation> getAllReservationsByBookId(Long id) {
-        return reservationRepository.findAllByIdBookId(id);
+        return reservationRepository.findAllByBookId(id);
     }
 
     public Reservation getReservationById(Long id) {
