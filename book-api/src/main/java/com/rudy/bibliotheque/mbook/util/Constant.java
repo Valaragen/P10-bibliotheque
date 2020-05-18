@@ -30,16 +30,20 @@ public class Constant {
     public static final String COPY_CODE_PATH = "/code";
 
     //STATUS
-    public static final Long STATUS_PENDING_CODE = 1L;
-    public static final Long STATUS_ONGOING_CODE = 2L;
-    public static final Long STATUS_LATE_CODE = 3L;
-    public static final Long STATUS_FINISHED_CODE = 4L;
-    public static final Long STATUS_CANCELLED_CODE = 5L;
+    public static final String STATUS_PENDING_CODE = "P";
+    public static final String STATUS_ONGOING_CODE = "O";
+    public static final String STATUS_LATE_CODE = "L";
+    public static final String STATUS_FINISHED_CODE = "F";
+    public static final String STATUS_CANCELLED_CODE = "C";
     public static final String STATUS_PENDING = "pending";
     public static final String STATUS_ONGOING = "ongoing";
     public static final String STATUS_LATE = "late";
     public static final String STATUS_FINISHED = "finished";
     public static final String STATUS_CANCELLED = "cancelled";
+
+    //CLAUSE
+    public static final String CLAUSE_STATUS_IS_ONGOING = "status = '" + STATUS_ONGOING_CODE + "'";
+
 
     //MESSAGE
     //Validation

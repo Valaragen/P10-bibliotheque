@@ -156,7 +156,6 @@ public class UserController {
             throw new ProhibitedActionException("Reservations are only available when all copies of the book are currently borrowed");
         }
         if (linkedBook.getOngoingReservations().size() >= (2 * linkedBook.getCopyNumber())) {
-            log.debug(String.valueOf(linkedBook.getOngoingReservations().size()));
             throw new ProhibitedActionException("The max number of concurrent reservations has been reached");
         }
         boolean hasAlreadyAReservation = linkedBook.getOngoingReservations().stream()
@@ -164,6 +163,7 @@ public class UserController {
         if (hasAlreadyAReservation) {
             throw new ProhibitedActionException("You can't reserve the same book twice");
         }
+
 
         Reservation reservation = new Reservation();
         reservation.setBook(linkedBook);

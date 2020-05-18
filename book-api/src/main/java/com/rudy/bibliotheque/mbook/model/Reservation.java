@@ -1,6 +1,8 @@
 package com.rudy.bibliotheque.mbook.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.rudy.bibliotheque.mbook.model.common.AbstractEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,8 +15,10 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class Reservation extends AbstractEntity {
-    @JsonManagedReference
     @ManyToOne
     private Book book;
 

@@ -9,15 +9,15 @@ public enum Status {
     FINISHED(Constant.STATUS_FINISHED_CODE, Constant.STATUS_FINISHED),
     CANCELLED(Constant.STATUS_CANCELLED_CODE, Constant.STATUS_CANCELLED);
 
-    private Long code;
+    private String code;
     private String name;
 
-    Status(Long code, String name) {
+    Status(String code, String name) {
         this.code = code;
         this.name = name;
     }
 
-    public Long getCode() {
+    public String getCode() {
         return code;
     }
     public String getName() {

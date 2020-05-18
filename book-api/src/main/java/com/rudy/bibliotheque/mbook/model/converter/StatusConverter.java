@@ -7,10 +7,10 @@ import javax.persistence.Converter;
 import java.util.stream.Stream;
 
 @Converter(autoApply = true)
-public class StatusConverter implements AttributeConverter<Status, Long> {
+public class StatusConverter implements AttributeConverter<Status, String> {
 
     @Override
-    public Long convertToDatabaseColumn(Status status) {
+    public String convertToDatabaseColumn(Status status) {
         if (status == null) {
             return null;
         }
@@ -18,7 +18,7 @@ public class StatusConverter implements AttributeConverter<Status, Long> {
     }
 
     @Override
-    public Status convertToEntityAttribute(Long code) {
+    public Status convertToEntityAttribute(String code) {
         if (code == null) {
             return null;
         }

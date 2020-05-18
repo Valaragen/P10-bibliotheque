@@ -1,13 +1,13 @@
 package com.rudy.bibliotheque.mbook.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.rudy.bibliotheque.mbook.model.common.AbstractEntity;
 import com.rudy.bibliotheque.mbook.util.Constant;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.Where;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -17,6 +17,9 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class Book extends AbstractEntity {
 
     @Column(length = 13, unique = true, nullable = false)
@@ -39,17 +42,15 @@ public class Book extends AbstractEntity {
 
     private Integer availableCopyNumber;
 
-    @JsonBackReference
     @OneToMany(mappedBy = "book", fetch = FetchType.EAGER)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Set<Reservation> reservations;
 
-    @JsonBackReference
     @OneToMany(mappedBy = "book")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @Filter(name = "onlyOngoing", condition = "status = " + Constant.STATUS_ONGOING)
+    @Where(clause = Constant.CLAUSE_STATUS_IS_ONGOING)
     private Set<Reservation> ongoingReservations;
 
 }
