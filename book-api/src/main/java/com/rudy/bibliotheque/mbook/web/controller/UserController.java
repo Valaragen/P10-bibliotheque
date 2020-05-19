@@ -25,9 +25,6 @@ import org.springframework.web.bind.annotation.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -68,36 +65,9 @@ public class UserController {
     public ResponseEntity<Borrow> createLoanForCurrentUser(@RequestBody LoanCreateDTO loanCreateDTO) {
         log.info("Start method createLoanForCurrentUser");
         loanCreateDTO.setUserId(ControllerUtil.getUserIdFromToken());
+        loanCreateDTO.setCode(null);
 
-        if (loanCreateDTO.getBookId() == null) {
-            throw new InvalidIdException("Book code has not been provided");
-        }
-        //link the copy
-        Copy linkedCopy = copyService.getAnAvailableCopyByBookId(loanCreateDTO.getBookId());
-        if (linkedCopy == null) {
-            throw new NotFoundException("No copy available for book with id " + loanCreateDTO.getBookId());
-        }
-
-        Borrow borrow = new Borrow();
-        borrow.setCopy(linkedCopy);
-        log.debug("Copy linked to the loan");
-        UserInfo linkedUserInfo = userInfoService.getUserInfoById(loanCreateDTO.getUserId());
-        if (linkedUserInfo == null) {
-            //Create the userInfo in database
-            linkedUserInfo = UserController.getUserInfoFromToken();
-            linkedUserInfo = userInfoService.saveUserInfo(linkedUserInfo);
-            if (linkedUserInfo == null) {
-                throw new CRUDIssueException("Can't create user_info entity");
-            }
-        }
-
-        borrow.setUserInfo(linkedUserInfo);
-        log.debug("User linked to the loan");
-
-        LoanController.loanToPendingLogic(borrow);
-
-        Borrow newBorrow = borrowService.saveLoan(borrow);
-        if (newBorrow == null) throw new CRUDIssueException("Can't' create loan");
+        Borrow newBorrow = borrowService.saveANewLoan(loanCreateDTO);
 
         log.info("Method ended");
         return new ResponseEntity<>(newBorrow, HttpStatus.CREATED);
@@ -181,7 +151,7 @@ public class UserController {
         reservation.setUserInfo(linkedUserInfo);
         log.debug("User linked to the reservation");
 
-        reservation.setStatus(Status.ONGOING);
+        reservation.setStatus(ReservationStatus.ONGOING);
 
         Reservation newReservation = reservationService.saveReservation(reservation);
         if (newReservation == null) throw new CRUDIssueException("Can't' create reservation");

@@ -1,6 +1,8 @@
 package com.rudy.bibliotheque.mbook.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.rudy.bibliotheque.mbook.model.common.AbstractEntity;
 import com.rudy.bibliotheque.mbook.util.Constant;
@@ -17,9 +19,6 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
 public class Book extends AbstractEntity {
 
     @Column(length = 13, unique = true, nullable = false)
@@ -42,12 +41,14 @@ public class Book extends AbstractEntity {
 
     private Integer availableCopyNumber;
 
-    @OneToMany(mappedBy = "book", fetch = FetchType.EAGER)
+    @JsonIgnoreProperties({"book"})
+    @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Set<Reservation> reservations;
 
-    @OneToMany(mappedBy = "book")
+    @JsonIgnoreProperties({"book"})
+    @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @Where(clause = Constant.CLAUSE_STATUS_IS_ONGOING)
