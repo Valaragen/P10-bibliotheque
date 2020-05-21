@@ -111,50 +111,7 @@ public class UserController {
         log.info("Start method createReservationForCurrentUser");
         reservationCreateDTO.setUserId(ControllerUtil.getUserIdFromToken());
 
-        if (reservationCreateDTO.getBookId() == null) {
-            throw new InvalidIdException("Book id has not been provided");
-        }
-
-        Book linkedBook = bookService.getBookById(reservationCreateDTO.getBookId());
-        if (linkedBook == null) {
-            throw new NotFoundException("No book with id " + reservationCreateDTO.getBookId());
-        }
-        if (linkedBook.getCopyNumber() == 0) {
-            throw new ProhibitedActionException("This book got no copy to reserve");
-        }
-        if (linkedBook.getAvailableCopyNumber() > 0) {
-            throw new ProhibitedActionException("Reservations are only available when all copies of the book are currently borrowed");
-        }
-        if (linkedBook.getOngoingReservations().size() >= (2 * linkedBook.getCopyNumber())) {
-            throw new ProhibitedActionException("The max number of concurrent reservations has been reached");
-        }
-        boolean hasAlreadyAReservation = linkedBook.getOngoingReservations().stream()
-                .map(Reservation::getUserInfo).anyMatch(userInfo -> userInfo.getId().equals(getCurrentUserIdFromToken()));
-        if (hasAlreadyAReservation) {
-            throw new ProhibitedActionException("You can't reserve the same book twice");
-        }
-
-
-        Reservation reservation = new Reservation();
-        reservation.setBook(linkedBook);
-        log.debug("Book linked to the reservation");
-        UserInfo linkedUserInfo = userInfoService.getUserInfoById(reservationCreateDTO.getUserId());
-        if (linkedUserInfo == null) {
-            //Create the userInfo in database
-            linkedUserInfo = UserController.getUserInfoFromToken();
-            linkedUserInfo = userInfoService.saveUserInfo(linkedUserInfo);
-            if (linkedUserInfo == null) {
-                throw new CRUDIssueException("Can't create user_info entity");
-            }
-        }
-
-        reservation.setUserInfo(linkedUserInfo);
-        log.debug("User linked to the reservation");
-
-        reservation.setStatus(ReservationStatus.ONGOING);
-
-        Reservation newReservation = reservationService.saveReservation(reservation);
-        if (newReservation == null) throw new CRUDIssueException("Can't' create reservation");
+        Reservation newReservation = reservationService.createNewReservation(reservationCreateDTO);
 
         log.info("Method ended");
         return new ResponseEntity<>(newReservation, HttpStatus.CREATED);

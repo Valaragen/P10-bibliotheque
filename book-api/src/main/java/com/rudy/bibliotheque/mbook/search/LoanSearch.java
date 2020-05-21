@@ -8,6 +8,6 @@ import java.util.Set;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LoanSearch {
-    private Set status;
+    private Set<String> status;
     private String userId;
 }

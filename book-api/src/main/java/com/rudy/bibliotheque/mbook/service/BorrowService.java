@@ -2,10 +2,7 @@ package com.rudy.bibliotheque.mbook.service;
 
 import com.rudy.bibliotheque.mbook.config.ApplicationPropertiesConfig;
 import com.rudy.bibliotheque.mbook.dto.LoanCreateDTO;
-import com.rudy.bibliotheque.mbook.model.Borrow;
-import com.rudy.bibliotheque.mbook.model.Copy;
-import com.rudy.bibliotheque.mbook.model.Reservation;
-import com.rudy.bibliotheque.mbook.model.UserInfo;
+import com.rudy.bibliotheque.mbook.model.*;
 import com.rudy.bibliotheque.mbook.repository.BorrowRepository;
 import com.rudy.bibliotheque.mbook.search.LoanSearch;
 import com.rudy.bibliotheque.mbook.web.controller.UserController;
@@ -21,8 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -35,16 +34,14 @@ public class BorrowService {
     private CopyService copyService;
     private UserInfoService userInfoService;
     private KeycloakRestTemplate keycloakRestTemplate;
-    private ReservationService reservationService;
     private BorrowRepository borrowRepository;
 
     @Autowired
-    public BorrowService(CopyService copyService, UserInfoService userInfoService, ApplicationPropertiesConfig appProperties, KeycloakRestTemplate keycloakRestTemplate, ReservationService reservationService, BorrowRepository borrowRepository) {
+    public BorrowService(CopyService copyService, UserInfoService userInfoService, ApplicationPropertiesConfig appProperties, KeycloakRestTemplate keycloakRestTemplate, BorrowRepository borrowRepository) {
         this.copyService = copyService;
         this.appProperties = appProperties;
         this.keycloakRestTemplate = keycloakRestTemplate;
         this.userInfoService = userInfoService;
-        this.reservationService = reservationService;
         this.borrowRepository = borrowRepository;
     }
 
@@ -65,6 +62,7 @@ public class BorrowService {
         return borrowRepository.save(borrow);
     }
 
+    @Transactional
     public Borrow saveANewLoan(LoanCreateDTO loanCreateDTO) {
         log.info("Start method saveANewLoan");
         if (loanCreateDTO.getUserId() == null) {
@@ -142,6 +140,7 @@ public class BorrowService {
         if (newBorrow == null) throw new CRUDIssueException("Can't' update loan");
     }
 
+    @Transactional
     public void saveALoanReturn(Long id, Borrow borrowAdditionalInfos) {
         Borrow borrow = getLoanById(id);
         if (borrow == null) {
@@ -166,13 +165,17 @@ public class BorrowService {
         if (newBorrow == null) throw new CRUDIssueException("Can't update loan");
 
         //Create a new loan from reservations
-        List<Reservation> bookReservations = reservationService.getAllReservationsByBookId(newBorrow.getCopy().getBook().getId());
-        if (!bookReservations.isEmpty()) {
-
+        Book currentBook = newBorrow.getCopy().getBook();
+        if (!currentBook.getOngoingReservations().isEmpty()) {
+            Reservation reservation = currentBook.getOngoingReservations().stream().min(Comparator.comparing(Reservation::getReservationStartDate)).orElseThrow(() -> new IllegalStateException("No min date has been found"));
+            LoanCreateDTO loanCreateDTO = new LoanCreateDTO();
+            loanCreateDTO.setUserId(reservation.getUserInfo().getId());
+            loanCreateDTO.setBookId(currentBook.getId());
+            saveANewLoan(loanCreateDTO);
         }
     }
 
-    public static void loanToPendingLogic(Borrow borrow) {
+    private static void loanToPendingLogic(Borrow borrow) {
         borrow.getCopy().setBorrowed(true);
         borrow.getCopy().getBook().setAvailableCopyNumber(borrow.getCopy().getBook().getAvailableCopyNumber() - 1);
 
@@ -186,7 +189,7 @@ public class BorrowService {
         borrow.setDeadlineToRetrieve(calendar.getTime());
     }
 
-    public static void loanToOngoingLogic(Borrow borrow, Integer loanTimeInDays) {
+    private void loanToOngoingLogic(Borrow borrow, Integer loanTimeInDays) {
         Date today = new Date();
         borrow.setLoanStartDate(today);
 
@@ -196,7 +199,7 @@ public class BorrowService {
         borrow.setLoanEndDate(calendar.getTime());
     }
 
-    public static void loanToReturnedLogic(Borrow borrow) {
+    private static void loanToReturnedLogic(Borrow borrow) {
         borrow.getCopy().setBorrowed(false);
         borrow.getCopy().getBook().setAvailableCopyNumber(borrow.getCopy().getBook().getAvailableCopyNumber() + 1);
 

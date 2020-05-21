@@ -10,5 +10,5 @@ import java.util.Set;
 public class ReservationSearch {
     private String userId;
     private String bookId;
-    private Set status;
+    private Set<String> status;
 }

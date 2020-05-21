@@ -14,6 +14,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
@@ -45,13 +46,13 @@ public class Book extends AbstractEntity {
     @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    private Set<Reservation> reservations;
+    private List<Reservation> reservations;
 
     @JsonIgnoreProperties({"book"})
     @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @Where(clause = Constant.CLAUSE_STATUS_IS_ONGOING)
-    private Set<Reservation> ongoingReservations;
+    private List<Reservation> ongoingReservations;
 
 }

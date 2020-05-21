@@ -2,7 +2,6 @@ package com.rudy.bibliotheque.mbook.util;
 
 import org.springframework.beans.factory.annotation.Value;
 
-// TODO Update
 public class Constant {
 
     //ROLES
