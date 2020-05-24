@@ -19,7 +19,7 @@ class AuthInterceptor implements RequestInterceptor {
 
     @Override
     public void apply(RequestTemplate template) {
-        //        User borrowingUser = borrow.getUser();
+//        User borrowingUser = borrow.getUser();
 //        borrowDTO.setUserUsername(borrowingUser.getUsername());
 //        borrowDTO.setUserEmail(borrowingUser.getEmail());
 //

@@ -89,6 +89,7 @@ public class ReservationService {
         LoanSearch loanSearch = new LoanSearch();
         loanSearch.setUserId(reservationCreateDTO.getUserId());
         Set<String> status = new HashSet<>();
+        status.add(Constant.STATUS_PENDING);
         status.add(Constant.STATUS_ONGOING);
         status.add(Constant.STATUS_LATE);
         loanSearch.setStatus(status);

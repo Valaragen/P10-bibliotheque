@@ -1,4 +1,4 @@
-package com.rudy.bibliotheque.batch.config;
+package com.rudy.bibliotheque.mbook.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

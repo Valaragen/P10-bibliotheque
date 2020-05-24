@@ -7,10 +7,7 @@ import com.rudy.bibliotheque.mbook.repository.BorrowRepository;
 import com.rudy.bibliotheque.mbook.search.LoanSearch;
 import com.rudy.bibliotheque.mbook.web.controller.UserController;
 import com.rudy.bibliotheque.mbook.web.controller.util.ControllerUtil;
-import com.rudy.bibliotheque.mbook.web.exception.CRUDIssueException;
-import com.rudy.bibliotheque.mbook.web.exception.InvalidIdException;
-import com.rudy.bibliotheque.mbook.web.exception.NotFoundException;
-import com.rudy.bibliotheque.mbook.web.exception.ProhibitedActionException;
+import com.rudy.bibliotheque.mbook.web.exception.*;
 import org.keycloak.adapters.springsecurity.client.KeycloakRestTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.MessagingException;
+import java.time.DayOfWeek;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
@@ -35,14 +34,16 @@ public class BorrowService {
     private UserInfoService userInfoService;
     private KeycloakRestTemplate keycloakRestTemplate;
     private BorrowRepository borrowRepository;
+    private EmailService emailService;
 
     @Autowired
-    public BorrowService(CopyService copyService, UserInfoService userInfoService, ApplicationPropertiesConfig appProperties, KeycloakRestTemplate keycloakRestTemplate, BorrowRepository borrowRepository) {
+    public BorrowService(CopyService copyService, UserInfoService userInfoService, ApplicationPropertiesConfig appProperties, KeycloakRestTemplate keycloakRestTemplate, BorrowRepository borrowRepository, EmailService emailService) {
         this.copyService = copyService;
         this.appProperties = appProperties;
         this.keycloakRestTemplate = keycloakRestTemplate;
         this.userInfoService = userInfoService;
         this.borrowRepository = borrowRepository;
+        this.emailService = emailService;
     }
 
 
@@ -121,7 +122,14 @@ public class BorrowService {
         loanToPendingLogic(borrow);
 
         Borrow newBorrow = saveLoan(borrow);
-        if (newBorrow == null) throw new CRUDIssueException("Can't' create loan");
+        if (newBorrow == null) throw new CRUDIssueException("Can't create loan");
+
+        try {
+            emailService.sendLoanInPendingEmail(newBorrow);
+        } catch (MessagingException e) {
+            throw new EmailSendException("Can't send Email");
+        }
+
         return newBorrow;
     }
 
@@ -185,7 +193,14 @@ public class BorrowService {
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(today);
-        calendar.add(Calendar.DATE, 2);
+        int timeGivenToRetrieveInDays = 2;
+        int addedDays = 0;
+        while (addedDays < timeGivenToRetrieveInDays) {
+            calendar.add(Calendar.DATE, 1);
+            if (calendar.get(Calendar.DAY_OF_WEEK) >= Calendar.MONDAY && calendar.get(Calendar.DAY_OF_WEEK) <= Calendar.FRIDAY) {
+                addedDays++;
+            }
+        }
         borrow.setDeadlineToRetrieve(calendar.getTime());
     }
 
@@ -196,6 +211,9 @@ public class BorrowService {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(today);
         calendar.add(Calendar.DATE, loanTimeInDays);
+        while (calendar.get(Calendar.DAY_OF_WEEK) < Calendar.MONDAY || calendar.get(Calendar.DAY_OF_WEEK) > Calendar.FRIDAY) {
+            calendar.add(Calendar.DATE, 1);
+        }
         borrow.setLoanEndDate(calendar.getTime());
     }
 

@@ -28,8 +28,7 @@ public class BatchApplication {
 	}
 
 	@Scheduled(cron = "0 30 11 * * ?")
-	public void perform() throws Exception
-	{
+	public void perform() throws Exception {
 		JobParameters params = new JobParametersBuilder()
 				.addString("importUserJob", String.valueOf(System.currentTimeMillis()))
 				.toJobParameters();

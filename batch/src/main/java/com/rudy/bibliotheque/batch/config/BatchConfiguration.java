@@ -86,7 +86,7 @@ public class BatchConfiguration {
     @Bean
     public Step step1() {
         return stepBuilderFactory.get("step1")
-                .<BorrowDTO, MimeMessage> chunk(10)
+                .<BorrowDTO, MimeMessage> chunk(50)
                 .reader(reader())
                 .processor(processor())
                 .writer(writer())

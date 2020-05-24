@@ -48,11 +48,11 @@ public class BorrowItemProcessor implements ItemProcessor<BorrowDTO, MimeMessage
         helper.setCc(sender);
 
         // Create the TEXT subject using Thymeleaf
-        final String content = this.templateEngine.process("email-subject.txt", ctx);
+        final String content = this.templateEngine.process("loan-late-email-subject.txt", ctx);
         helper.setSubject(content);
 
         // Create the HTML body using Thymeleaf
-        final String htmlContent = this.templateEngine.process("email-body.html", ctx);
+        final String htmlContent = this.templateEngine.process("loan-late-email-body.html", ctx);
         helper.setText(htmlContent, true); // true = isHtml
 
         log.info("Preparing message for: " + borrowDTO.getUserInfo().getEmail());

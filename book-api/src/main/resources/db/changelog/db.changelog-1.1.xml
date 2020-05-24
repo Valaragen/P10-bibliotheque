@@ -33,4 +33,10 @@
                                  referencedColumnNames="id" referencedTableName="user_info" validate="true"/>
     </changeSet>
 
+    <changeSet id="mbook-012" author="Rudy Boinnard">
+        <modifyDataType tableName="borrow" columnName="deadline_to_retrieve" newDataType="DATETIME"/>
+    </changeSet>
+
+
+
 </databaseChangeLog>

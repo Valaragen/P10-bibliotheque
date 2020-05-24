@@ -131,12 +131,4 @@ public class UserController {
         userInfo.setPhone(token.getPhoneNumber());
         return userInfo;
     }
-
-    public static String getCurrentUserIdFromToken() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        KeycloakAuthenticationToken kp = (KeycloakAuthenticationToken) authentication;
-        AccessToken token = kp.getAccount().getKeycloakSecurityContext().getToken();
-
-        return token.getSubject();
-    }
 }

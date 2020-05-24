@@ -18,6 +18,7 @@ public class Constant {
     public static final String USERS_PATH = "/users";
     public static final String BOOKS_PATH = "/books";
     public static final String LOANS_PATH = "/loans";
+    public static final String MAILS_PATH = "/mails";
 
     public static final String ADD_PATH = "/add";
     public static final String MODIFY_PATH = "/modify";
@@ -29,15 +30,7 @@ public class Constant {
     public static final String PENDING_PATH = "/pending";
     public static final String CURRENT_PATH = "/current";
     public static final String SEARCH_PATH = "/search";
-
-    //PAGES
-    public static final String HOME_PAGE = "homePage";
-    public static final String BOOKS_LIST_PAGE = "booksListPage";
-    public static final String LOANS_LIST_PAGE = "loansListPage";
-    public static final String LOANS_USER_PAGE = "loansUserPage";
-    public static final String BOOK_DETAILS_PAGE = "bookDetailsPage";
-    public static final String BOOK_ADD_PAGE = "bookAddPage";
-    public static final String BOOK_MODIFY_PAGE = "bookModifyPage";
+    public static final String PENDING_MAIL_PATH = "/pending-mail";
 
     //LOAN STATUS
     public static final String LOAN_STATUS_PENDING = "pending";
