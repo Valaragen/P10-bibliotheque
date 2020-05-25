@@ -55,4 +55,10 @@ public class Book extends AbstractEntity {
     @Where(clause = Constant.CLAUSE_STATUS_IS_ONGOING)
     private List<Reservation> ongoingReservations;
 
+    @JsonIgnoreProperties({"book"})
+    @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Copy> copies;
+
 }

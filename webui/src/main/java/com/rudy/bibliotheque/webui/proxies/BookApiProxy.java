@@ -1,10 +1,9 @@
 package com.rudy.bibliotheque.webui.proxies;
 
-import com.rudy.bibliotheque.webui.dto.BookDTO;
-import com.rudy.bibliotheque.webui.dto.LoanCreateDTO;
+import com.rudy.bibliotheque.webui.dto.*;
 import com.rudy.bibliotheque.webui.dto.search.BookSearchDTO;
-import com.rudy.bibliotheque.webui.dto.BorrowDTO;
 import com.rudy.bibliotheque.webui.dto.search.LoanSearchDTO;
+import com.rudy.bibliotheque.webui.dto.search.ReservationSearchDTO;
 import com.rudy.bibliotheque.webui.util.Constant;
 import org.springframework.cloud.netflix.ribbon.RibbonClient;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -45,5 +44,11 @@ public interface BookApiProxy {
 
     @PutMapping(Constant.USERS_PATH + Constant.CURRENT_PATH + Constant.LOANS_PATH + Constant.SLASH_ID_PATH + Constant.EXTEND_PATH)
     ResponseEntity<BorrowDTO> extendMyLoan(@PathVariable Long id);
+
+    @GetMapping(Constant.USERS_PATH + Constant.CURRENT_PATH + Constant.RESERVATIONS_PATH)
+    List<ReservationDTO> getReservationsOfCurrentUser(@SpringQueryMap ReservationSearchDTO reservationSearchDTO);
+
+    @PostMapping(Constant.USERS_PATH + Constant.CURRENT_PATH + Constant.RESERVATIONS_PATH)
+    ResponseEntity<ReservationDTO> createReservationForCurrentUser(@RequestBody ReservationCreateDTO reservationCreateDTO);
 
 }

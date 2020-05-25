@@ -14,7 +14,7 @@ import java.util.Date;
 @Data
 @Entity
 public class Reservation extends AbstractEntity {
-    @JsonIgnoreProperties({"reservations", "ongoingReservations"})
+    @JsonIgnoreProperties({"reservations"})
     @ManyToOne
     private Book book;
 

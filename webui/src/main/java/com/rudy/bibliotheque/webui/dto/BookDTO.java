@@ -10,6 +10,7 @@ import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -41,4 +42,8 @@ public class BookDTO {
     private Integer copyNumber;
 
     private Integer availableCopyNumber;
+
+    private List<ReservationDTO> ongoingReservations;
+
+    private List<CopyDTO> copies;
 }

@@ -7,6 +7,8 @@ import java.util.Set;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LoanSearchDTO {
+public class ReservationSearchDTO {
+    private String userId;
+    private String bookId;
     private Set<String> status;
 }

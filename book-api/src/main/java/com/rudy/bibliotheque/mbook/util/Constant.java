@@ -42,6 +42,7 @@ public class Constant {
 
     //CLAUSE
     public static final String CLAUSE_STATUS_IS_ONGOING = "status = '" + STATUS_ONGOING_CODE + "'";
+    public static final String CLAUSE_LOAN_REQUEST_DATE_IS_NOT_NULL_AND_RETURNED_ON_IS_NULL = "loan_request_date IS NOT NULL AND returned_on IS NULL";
 
 
     //MESSAGE

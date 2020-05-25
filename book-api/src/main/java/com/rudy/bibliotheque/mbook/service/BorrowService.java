@@ -5,6 +5,7 @@ import com.rudy.bibliotheque.mbook.dto.LoanCreateDTO;
 import com.rudy.bibliotheque.mbook.model.*;
 import com.rudy.bibliotheque.mbook.repository.BorrowRepository;
 import com.rudy.bibliotheque.mbook.search.LoanSearch;
+import com.rudy.bibliotheque.mbook.util.Constant;
 import com.rudy.bibliotheque.mbook.web.controller.UserController;
 import com.rudy.bibliotheque.mbook.web.controller.util.ControllerUtil;
 import com.rudy.bibliotheque.mbook.web.exception.*;
@@ -19,10 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
 import java.time.DayOfWeek;
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class BorrowService {
@@ -183,7 +182,7 @@ public class BorrowService {
         }
     }
 
-    private static void loanToPendingLogic(Borrow borrow) {
+    private void loanToPendingLogic(Borrow borrow) {
         borrow.getCopy().setBorrowed(true);
         borrow.getCopy().getBook().setAvailableCopyNumber(borrow.getCopy().getBook().getAvailableCopyNumber() - 1);
 
@@ -217,12 +216,29 @@ public class BorrowService {
         borrow.setLoanEndDate(calendar.getTime());
     }
 
-    private static void loanToReturnedLogic(Borrow borrow) {
+    private void loanToReturnedLogic(Borrow borrow) {
         borrow.getCopy().setBorrowed(false);
         borrow.getCopy().getBook().setAvailableCopyNumber(borrow.getCopy().getBook().getAvailableCopyNumber() + 1);
 
         Date today = new Date();
         borrow.setReturnedOn(today);
+    }
+
+    public boolean isUserBorrowingBook(String userId, Long bookId) {
+        //Check if the user is currently borrowing this book
+        LoanSearch loanSearch = new LoanSearch();
+        loanSearch.setUserId(userId);
+        Set<String> status = new HashSet<>();
+        status.add(Constant.STATUS_PENDING);
+        status.add(Constant.STATUS_ONGOING);
+        status.add(Constant.STATUS_LATE);
+        loanSearch.setStatus(status);
+        List<Borrow> ongoingBorrowsOfUser = getLoansBySearch(loanSearch);
+        if (ongoingBorrowsOfUser != null && !ongoingBorrowsOfUser.isEmpty()) {
+            List<Long> ongoingBorrowedBookId = ongoingBorrowsOfUser.stream().map((borrow) -> borrow.getCopy().getBook().getId()).collect(Collectors.toList());
+            return ongoingBorrowedBookId.contains(bookId);
+        }
+        return false;
     }
 
 }

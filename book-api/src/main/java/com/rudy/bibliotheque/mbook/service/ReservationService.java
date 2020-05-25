@@ -85,20 +85,8 @@ public class ReservationService {
         if (hasAlreadyAReservation) {
             throw new ProhibitedActionException("You can't reserve the same book twice");
         }
-        //Check if the user is currently borrowing this book
-        LoanSearch loanSearch = new LoanSearch();
-        loanSearch.setUserId(reservationCreateDTO.getUserId());
-        Set<String> status = new HashSet<>();
-        status.add(Constant.STATUS_PENDING);
-        status.add(Constant.STATUS_ONGOING);
-        status.add(Constant.STATUS_LATE);
-        loanSearch.setStatus(status);
-        List<Borrow> ongoingBorrowsOfUser = borrowService.getLoansBySearch(loanSearch);
-        if (ongoingBorrowsOfUser != null && !ongoingBorrowsOfUser.isEmpty()) {
-            List<Long> ongoingBorrowedBookId = ongoingBorrowsOfUser.stream().map((borrow) -> borrow.getCopy().getBook().getId()).collect(Collectors.toList());
-            if (ongoingBorrowedBookId.contains(reservationCreateDTO.getBookId())) {
-                throw new ProhibitedActionException("You can't reserve a book that you are borrowing");
-            }
+        if (borrowService.isUserBorrowingBook(reservationCreateDTO.getUserId(), reservationCreateDTO.getBookId())) {
+            throw new ProhibitedActionException("You can't reserve a book that you are borrowing");
         }
 
         Reservation reservation = new Reservation();

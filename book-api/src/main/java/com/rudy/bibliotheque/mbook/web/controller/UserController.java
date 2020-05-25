@@ -4,6 +4,7 @@ import com.rudy.bibliotheque.mbook.dto.LoanCreateDTO;
 import com.rudy.bibliotheque.mbook.dto.ReservationCreateDTO;
 import com.rudy.bibliotheque.mbook.model.*;
 import com.rudy.bibliotheque.mbook.search.LoanSearch;
+import com.rudy.bibliotheque.mbook.search.ReservationSearch;
 import com.rudy.bibliotheque.mbook.service.*;
 import com.rudy.bibliotheque.mbook.util.Constant;
 import com.rudy.bibliotheque.mbook.web.controller.util.ControllerUtil;
@@ -67,6 +68,13 @@ public class UserController {
         loanCreateDTO.setUserId(ControllerUtil.getUserIdFromToken());
         loanCreateDTO.setCode(null);
 
+        if(loanCreateDTO.getBookId() == null) {
+            throw new InvalidIdException("A book id need to be provided");
+        }
+        if(borrowService.isUserBorrowingBook(loanCreateDTO.getUserId(), loanCreateDTO.getBookId())) {
+            throw new ProhibitedActionException("You can't borrow the same book twice");
+        }
+
         Borrow newBorrow = borrowService.saveANewLoan(loanCreateDTO);
 
         log.info("Method ended");
@@ -103,6 +111,13 @@ public class UserController {
         if(newLoan == null) throw new CRUDIssueException("Can't update the loan");
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PreAuthorize("hasRole('" + Constant.USER_ROLE_NAME + "')")
+    @GetMapping(Constant.CURRENT_PATH + Constant.RESERVATIONS_PATH)
+    public List<Reservation> getReservationsOfCurrentUser(@ModelAttribute("loanSearch") ReservationSearch reservationSearch) {
+        reservationSearch.setUserId(ControllerUtil.getUserIdFromToken());
+        return reservationService.getAllReservationsBySearch(reservationSearch);
     }
 
     @PreAuthorize("hasRole('" + Constant.USER_ROLE_NAME + "')")

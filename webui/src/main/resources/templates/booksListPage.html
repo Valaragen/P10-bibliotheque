@@ -76,13 +76,22 @@
                     </div>
                     <p class="card-text text-justify text-4-line-truncate" th:text="${book.description}"></p>
                     <a class="btn btn-primary" th:href="@{/books/{id}(id=${book.id})}" role="button">Consulter</a>
-                    <form sec:authorize="isAuthenticated()" class="d-inline-block" th:id="${'loan-btn-' + book.id}" th:unless="${book.availableCopyNumber <= 0}"
+                    <form sec:authorize="isAuthenticated()" class="d-inline-block" th:id="${'loan-btn-' + book.id}" th:if="${book.availableCopyNumber > 0 && !currentUserBorrowedBookIds.contains(book.id)}"
                           th:action="@{/loans/my-loans}" method="POST">
                         <input class="form-control"
                                id="bookId" type="hidden" th:value="${book.id}" name="bookId"
                                required/>
-                        <button class="btn btn-primary" type="submit">
+                        <button class="btn btn-outline-primary" type="submit">
                             Emprunter
+                        </button>
+                    </form>
+                    <form sec:authorize="isAuthenticated()" class="d-inline-block" th:id="${'reserve-btn-' + book.id}" th:if="${book.availableCopyNumber <= 0 && !currentUserBorrowedBookIds.contains(book.id) && !currentUserReservedBookIds.contains(book.id)}"
+                          th:action="@{/reservations/my-reservations}" method="POST">
+                        <input class="form-control"
+                               id="reserveBookId" type="hidden" th:value="${book.id}" name="bookId"
+                               required/>
+                        <button class="btn btn-outline-info" type="submit">
+                            Réserver
                         </button>
                     </form>
                 </div>
