@@ -28,6 +28,9 @@ public class BorrowService {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
+    @Autowired
+    private ReservationService reservationService;
+
     private ApplicationPropertiesConfig appProperties;
     private CopyService copyService;
     private UserInfoService userInfoService;
@@ -60,6 +63,10 @@ public class BorrowService {
 
     public Borrow saveLoan(Borrow borrow) {
         return borrowRepository.save(borrow);
+    }
+
+    public void deleteLoanById(Long id) {
+        borrowRepository.deleteById(id);
     }
 
     @Transactional
@@ -171,15 +178,17 @@ public class BorrowService {
         Borrow newBorrow = saveLoan(borrow);
         if (newBorrow == null) throw new CRUDIssueException("Can't update loan");
 
-        //Create a new loan from reservations
-        Book currentBook = newBorrow.getCopy().getBook();
-        if (!currentBook.getOngoingReservations().isEmpty()) {
-            Reservation reservation = currentBook.getOngoingReservations().stream().min(Comparator.comparing(Reservation::getReservationStartDate)).orElseThrow(() -> new IllegalStateException("No min date has been found"));
-            LoanCreateDTO loanCreateDTO = new LoanCreateDTO();
-            loanCreateDTO.setUserId(reservation.getUserInfo().getId());
-            loanCreateDTO.setBookId(currentBook.getId());
-            saveANewLoan(loanCreateDTO);
+        reservationService.createLoanFromBookReservations(newBorrow.getCopy().getBook());
+    }
+
+    @Transactional
+    public void cancelLoan(Long id) {
+        Borrow borrow = getLoanById(id);
+        if (borrow.getLoanStartDate() != null) {
+            throw new ProhibitedActionException("Can't cancel an ongoing loan");
         }
+        deleteLoanById(borrow.getId());
+        reservationService.createLoanFromBookReservations(borrow.getCopy().getBook());
     }
 
     private void loanToPendingLogic(Borrow borrow) {

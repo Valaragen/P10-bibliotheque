@@ -86,7 +86,7 @@ public class UserController {
     public ResponseEntity<Borrow> extendMyLoan(@PathVariable Long id) throws ParseException {
         String tokenSubjectId = ControllerUtil.getUserIdFromToken();
         Borrow currentLoan = borrowService.getLoanById(id);
-        if(currentLoan == null) {
+        if (currentLoan == null) {
             throw new NotFoundException("No loan with id " + id + " has been found");
         }
         if (!tokenSubjectId.equals(currentLoan.getUserInfo().getId())) {

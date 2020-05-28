@@ -1,11 +1,13 @@
 package com.rudy.bibliotheque.mbook.service;
 
+import com.rudy.bibliotheque.mbook.dto.LoanCreateDTO;
 import com.rudy.bibliotheque.mbook.dto.ReservationCreateDTO;
-import com.rudy.bibliotheque.mbook.model.*;
+import com.rudy.bibliotheque.mbook.model.Book;
+import com.rudy.bibliotheque.mbook.model.Reservation;
+import com.rudy.bibliotheque.mbook.model.ReservationStatus;
+import com.rudy.bibliotheque.mbook.model.UserInfo;
 import com.rudy.bibliotheque.mbook.repository.ReservationRepository;
-import com.rudy.bibliotheque.mbook.search.LoanSearch;
 import com.rudy.bibliotheque.mbook.search.ReservationSearch;
-import com.rudy.bibliotheque.mbook.util.Constant;
 import com.rudy.bibliotheque.mbook.web.controller.UserController;
 import com.rudy.bibliotheque.mbook.web.controller.util.ControllerUtil;
 import com.rudy.bibliotheque.mbook.web.exception.CRUDIssueException;
@@ -17,10 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -112,5 +113,62 @@ public class ReservationService {
         if (newReservation == null) throw new CRUDIssueException("Can't' create reservation");
 
         return newReservation;
+    }
+
+    @Transactional
+    public void cancelReservation(Reservation reservation) {
+        if (reservation.getStatus() == ReservationStatus.CANCELLED) {
+            throw new ProhibitedActionException("This reservation is already cancelled");
+        }
+        if (reservation.getStatus() == ReservationStatus.FINISHED) {
+            throw new ProhibitedActionException("Can't cancel a finished reservation");
+        }
+
+        reservationToCancelledLogic(reservation);
+        Reservation newReservation = saveReservation(reservation);
+        if (newReservation == null) {
+            throw new CRUDIssueException("Can't update reservation");
+        }
+    }
+
+    @Transactional
+    public void validateReservation(Reservation reservation) {
+        if (reservation.getStatus() == ReservationStatus.FINISHED) {
+            throw new ProhibitedActionException("This reservation is already finished");
+        }
+        if (reservation.getStatus() == ReservationStatus.CANCELLED) {
+            throw new ProhibitedActionException("Can't validate a cancelled reservation");
+        }
+
+        reservationToFinishedLogic(reservation);
+        Reservation newReservation = saveReservation(reservation);
+        if (newReservation == null) {
+            throw new CRUDIssueException("Can't update reservation");
+        }
+    }
+
+    @Transactional
+    public void createLoanFromBookReservations(Book book) {
+        if (!book.getOngoingReservations().isEmpty()) {
+            Reservation reservation = book.getOngoingReservations().stream().min(Comparator.comparing(Reservation::getReservationStartDate)).orElseThrow(() -> new IllegalStateException("No min date has been found"));
+            LoanCreateDTO loanCreateDTO = new LoanCreateDTO();
+            loanCreateDTO.setUserId(reservation.getUserInfo().getId());
+            loanCreateDTO.setBookId(book.getId());
+            borrowService.saveANewLoan(loanCreateDTO);
+            log.info("New loan on book " + book.getName() + "created for user " + loanCreateDTO.getUserId());
+            validateReservation(reservation);
+        } else {
+            log.info("No reservations on book, no loan has been created");
+        }
+    }
+
+    private void reservationToFinishedLogic(Reservation reservation) {
+        reservation.setStatus(ReservationStatus.FINISHED);
+        reservation.setReservationEndDate(new Date());
+    }
+
+    private void reservationToCancelledLogic(Reservation reservation) {
+        reservation.setStatus(ReservationStatus.CANCELLED);
+        reservation.setReservationEndDate(new Date());
     }
 }

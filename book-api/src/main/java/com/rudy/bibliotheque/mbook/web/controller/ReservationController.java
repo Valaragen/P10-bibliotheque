@@ -45,4 +45,6 @@ public class ReservationController {
     public List<Reservation> getAllReservations(@ModelAttribute("reservationSearch") ReservationSearch reservationSearch){
         return reservationService.getAllReservationsBySearch(reservationSearch);
     }
+
+    //TODO cancel reservation
 }

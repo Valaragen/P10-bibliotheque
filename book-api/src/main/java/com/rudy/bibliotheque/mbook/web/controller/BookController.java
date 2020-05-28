@@ -83,7 +83,7 @@ public class BookController {
     @DeleteMapping(Constant.SLASH_ID_PATH)
     public ResponseEntity<Book> deleteBook(@PathVariable Long id) {
         bookService.deleteBookById(id);
-        if(bookService.getBookById(id) != null) throw new CRUDIssueException("Can't delete the book");
+        if (bookService.getBookById(id) != null) throw new CRUDIssueException("Can't delete the book");
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

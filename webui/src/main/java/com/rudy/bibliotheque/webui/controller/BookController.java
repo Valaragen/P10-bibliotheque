@@ -21,9 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -35,17 +33,17 @@ public class BookController {
     private BookApiProxy bookApiProxy;
 
     @Autowired
-    public BookController(BookApiProxy bookApiProxy){
+    public BookController(BookApiProxy bookApiProxy) {
         this.bookApiProxy = bookApiProxy;
     }
 
     @GetMapping
     public String getBooksPage(@ModelAttribute("bookSearch") BookSearchDTO bookSearchDTO, Model model) {
-        if(!model.containsAttribute("bookSearch")) {
+        if (!model.containsAttribute("bookSearch")) {
             model.addAttribute("bookSearch", bookSearchDTO);
         }
 
-        if(SecurityContextHolder.getContext().getAuthentication() != null && SecurityContextHolder.getContext().getAuthentication().isAuthenticated() && !(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken) ) {
+        if (SecurityContextHolder.getContext().getAuthentication() != null && SecurityContextHolder.getContext().getAuthentication().isAuthenticated() && !(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)) {
             LoanSearchDTO loanSearchDTO = new LoanSearchDTO();
             Set<String> loanStatus = new HashSet<>();
             loanStatus.add(Constant.STATUS_PENDING);
@@ -60,7 +58,16 @@ public class BookController {
             reservationSearchDTO.setStatus(reservationStatus);
             model.addAttribute("currentUserReservedBookIds", bookApiProxy.getReservationsOfCurrentUser(reservationSearchDTO).stream().map((reservation) -> reservation.getBook().getId()).collect(Collectors.toList()));
         }
-        model.addAttribute("books", bookApiProxy.getAllBooks(bookSearchDTO));
+
+        List<BookDTO> books = bookApiProxy.getAllBooks(bookSearchDTO);
+        for (BookDTO book : books) {
+            if (book.getAvailableCopyNumber() <= 0)
+                book.getCopies().stream()
+                        .filter((copy) -> copy.getOngoingBorrow().get(0).getLoanEndDate() != null && copy.getOngoingBorrow().get(0).getLoanEndDate().after(new Date()))
+                        .min(Comparator.comparing((copy) -> copy.getOngoingBorrow().get(0).getLoanEndDate())).ifPresent(nextCopyReturn -> book.setNearestReturnDate(nextCopyReturn.getOngoingBorrow().get(0).getLoanEndDate()));
+        }
+        model.addAttribute("books", books);
+
         return Constant.BOOKS_LIST_PAGE;
     }
 

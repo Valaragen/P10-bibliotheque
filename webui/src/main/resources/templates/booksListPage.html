@@ -72,7 +72,7 @@
                     <div class="card-title">
                         <h5 class="d-inline-block" th:text="${book.name}">Card title</h5>
                         <small class="ml-3 d-inline-block text-muted" th:text="${book.author}"></small>
-                        <span class="badge badge-primary ml-3" th:text="${'NB exemplaire(s): ' + book.availableCopyNumber}">Primary</span>
+                        <span class="badge badge-primary ml-3" th:text="${'NB exemplaire(s) disponibles: ' + book.availableCopyNumber}">Primary</span>
                     </div>
                     <p class="card-text text-justify text-4-line-truncate" th:text="${book.description}"></p>
                     <a class="btn btn-primary" th:href="@{/books/{id}(id=${book.id})}" role="button">Consulter</a>
@@ -85,7 +85,7 @@
                             Emprunter
                         </button>
                     </form>
-                    <form sec:authorize="isAuthenticated()" class="d-inline-block" th:id="${'reserve-btn-' + book.id}" th:if="${book.availableCopyNumber <= 0 && !currentUserBorrowedBookIds.contains(book.id) && !currentUserReservedBookIds.contains(book.id)}"
+                    <form sec:authorize="isAuthenticated()" class="d-inline-block" th:id="${'reserve-btn-' + book.id}" th:if="${book.availableCopyNumber <= 0 && !currentUserBorrowedBookIds.contains(book.id) && !currentUserReservedBookIds.contains(book.id) && book.getCopyNumber()*2 >= book.getOngoingReservations().size()}"
                           th:action="@{/reservations/my-reservations}" method="POST">
                         <input class="form-control"
                                id="reserveBookId" type="hidden" th:value="${book.id}" name="bookId"
@@ -94,6 +94,9 @@
                             Réserver
                         </button>
                     </form>
+                    <strong class="mt-3 d-block" th:text="${'Nombre de reservations : ' + book.getOngoingReservations().size()}"></strong>
+                    <strong class="mt-1 d-block" th:if="${book.getNearestReturnDate() != null}" th:text="${'Date de retour prévue du prochain ouvrage : ' + #dates.format(book.getNearestReturnDate(), 'dd/MM/yyyy')}"></strong>
+                    <strong class="mt-1 d-block" th:if="${book.getNearestReturnDate() == null}" th:text="${'Date de retour prévue du prochain ouvrage : Aucune date précise disponible'}"></strong>
                 </div>
             </div>
         </div>

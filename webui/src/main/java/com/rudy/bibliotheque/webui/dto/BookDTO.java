@@ -1,5 +1,6 @@
 package com.rudy.bibliotheque.webui.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.rudy.bibliotheque.webui.util.Constant;
 import lombok.Data;
@@ -46,4 +47,8 @@ public class BookDTO {
     private List<ReservationDTO> ongoingReservations;
 
     private List<CopyDTO> copies;
+
+    @JsonIgnore
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date nearestReturnDate;
 }
