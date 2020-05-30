@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 @Controller
@@ -44,7 +45,7 @@ public class LoanController {
     @GetMapping(Constant.MY_LOANS_PATH)
     public String getUserLoans(@ModelAttribute("loanSearch") LoanSearchDTO loanSearchDTO, Model model) {
         //Reset the status as the user can't define one on this page
-        loanSearchDTO.setStatus(new ArrayList<>());
+        loanSearchDTO.setStatus(new HashSet<>());
         loadLoansInModel(loanSearchDTO, model);
         return Constant.LOANS_USER_PAGE;
     }

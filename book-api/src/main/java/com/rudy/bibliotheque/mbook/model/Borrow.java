@@ -28,8 +28,8 @@ public class Borrow extends AbstractEntity {
     @Column(nullable = false)
     private Date loanRequestDate;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
     private Date deadlineToRetrieve;
 

@@ -4,7 +4,7 @@
       xmlns:th="http://www.thymeleaf.org"
 >
 <head>
-    <title>Mes empreints - Bibliothèque</title>
+    <title>Mes emprunts - Bibliothèque</title>
 </head>
 <body>
 <main role="main" class="container-fluid mt-1">
@@ -22,7 +22,7 @@
                 <th th:text="${pendingLoan.id}"></th>
                 <th th:text="${pendingLoan.copy.book.name}"></th>
                 <th th:text="${pendingLoan.copy.code}"></th>
-                <th th:text="${#dates.format(pendingLoan.deadlineToRetrieve, 'dd/MM/yyyy')}"></th>
+                <th th:text="${#dates.format(pendingLoan.deadlineToRetrieve, 'dd/MM/yyyy HH''h''mm')}"></th>
             </tr>
         </table>
     </div>

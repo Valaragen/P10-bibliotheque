@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html th:replace="includes/layouts :: basicLayout(~{::title},~{::main},~{},~{::.additional-scripts})" lang="fr"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+>
+<head>
+    <title>Mes réservations - Bibliothèque</title>
+</head>
+<body>
+<main role="main" class="container-fluid mt-1">
+    <h1>Mes réservations</h1>
+    <h4>En cours</h4>
+    <div th:if="${!#lists.isEmpty(ongoingReservations)}">
+        <table class="table table-hover table-black bg-white">
+            <tr class="thead-dark">
+                <th scope="col">Id</th>
+                <th scope="col">Nom du livre</th>
+                <th scope="col">Date de la réservation</th>
+                <th scope="col">Date de retour du prochain ouvrage</th>
+                <th scope="col">Position dans la liste d'attente</th>
+                <th scope="col">Actions</th>
+            </tr>
+            <tr th:each="ongoingReservation : ${ongoingReservations}">
+                <th th:text="${ongoingReservation.id}"></th>
+                <th th:text="${ongoingReservation.book.name}"></th>
+                <th th:text="${#dates.format(ongoingReservation.getReservationStartDate(), 'dd/MM/yyyy HH''h''mm')}"></th>
+                <th th:if="${ongoingReservation.getNearestReturnDate() != null}" th:text="${#dates.format(ongoingReservation.getNearestReturnDate(), 'dd/MM/yyyy')}"></th>
+                <th th:if="${ongoingReservation.getNearestReturnDate() == null}">Aucune date précise disponible</th>
+                <th th:text="${ongoingReservation.getCurrentUserPositionInQueue()}"></th>
+                <td>
+                    <form th:id="${'reservation-cancel-' + ongoingReservation.id}"
+                          th:action="@{/reservations/{id}/cancel(id = ${ongoingReservation.id})}" method="POST">
+                        <button class="btn btn-danger" type="submit" data-container="body"
+                                data-toggle="popover" data-placement="left" data-trigger="hover"
+                                data-content="Annuler la reservation.">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <p th:if="${#lists.isEmpty(ongoingReservations)}">
+        Aucune reservation en cours
+    </p>
+    <div th:if="${!#lists.isEmpty(finishedReservations)}">
+        <h4>Validées</h4>
+        <table class="table table-hover table-black bg-white">
+            <tr class="thead-dark">
+                <th scope="col">Id</th>
+                <th scope="col">Nom du livre</th>
+                <th scope="col">Date de la réservation</th>
+                <th scope="col">Date de la validation</th>
+            </tr>
+            <tr th:each="finishedReservation : ${finishedReservations}">
+                <th th:text="${finishedReservation.id}"></th>
+                <th th:text="${finishedReservation.book.name}"></th>
+                <td th:text="${#dates.format(finishedReservation.getReservationStartDate(), 'dd/MM/yyyy HH''h''mm')}"></td>
+                <td th:text="${#dates.format(finishedReservation.getReservationEndDate(), 'dd/MM/yyyy HH''h''mm')}"></td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+    <div th:if="${!#lists.isEmpty(cancelledReservations)}">
+        <h4>Annulées</h4>
+        <table class="table table-hover table-black bg-white">
+            <tr class="thead-dark">
+                <th scope="col">Id</th>
+                <th scope="col">Nom du livre</th>
+                <th scope="col">Date de la réservation</th>
+                <th scope="col">Date de l'annulation</th>
+            </tr>
+            <tr th:each="cancelledReservation : ${cancelledReservations}">
+                <th th:text="${cancelledReservation.id}"></th>
+                <th th:text="${cancelledReservation.book.name}"></th>
+                <td th:text="${#dates.format(cancelledReservation.getReservationStartDate(), 'dd/MM/yyyy HH''h''mm')}"></td>
+                <td th:text="${#dates.format(cancelledReservation.getReservationEndDate(), 'dd/MM/yyyy HH''h''mm')}"></td>
+            </tr>
+        </table>
+    </div>
+</main>
+
+<div class="additional-scripts">
+    <script type="application/javascript" th:src="@{/js/popoverUnable.js}"></script>
+</div>
+</body>
+</html>
