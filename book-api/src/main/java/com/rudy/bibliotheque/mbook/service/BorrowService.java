@@ -182,12 +182,14 @@ public class BorrowService {
     }
 
     @Transactional
-    public void cancelLoan(Long id) {
-        Borrow borrow = getLoanById(id);
+    public void cancelLoan(Borrow borrow) {
         if (borrow.getLoanStartDate() != null) {
             throw new ProhibitedActionException("Can't cancel an ongoing loan");
         }
+        borrow.getCopy().setBorrowed(false);
+        borrow.getCopy().getBook().setAvailableCopyNumber(borrow.getCopy().getBook().getAvailableCopyNumber() + 1);
         deleteLoanById(borrow.getId());
+        if (getLoanById(borrow.getId()) != null) throw new CRUDIssueException("Can't delete the book with id " + borrow.getId());
         reservationService.createLoanFromBookReservations(borrow.getCopy().getBook());
     }
 

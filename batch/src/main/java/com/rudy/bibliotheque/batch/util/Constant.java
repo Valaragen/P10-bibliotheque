@@ -29,14 +29,17 @@ public class Constant {
     public static final String ONGOING_PATH = "/ongoing";
     public static final String PENDING_PATH = "/pending";
     public static final String CURRENT_PATH = "/current";
+    public static final String CANCEL_PATH = "/cancel";
     public static final String SEARCH_PATH = "/search";
     public static final String PENDING_MAIL_PATH = "/pending-mail";
 
     //LOAN STATUS
-    public static final String LOAN_STATUS_PENDING = "pending";
-    public static final String LOAN_STATUS_ONGOING = "ongoing";
-    public static final String LOAN_STATUS_LATE = "late";
-    public static final String LOAN_STATUS_FINISHED = "finished";
+    public static final String STATUS_PENDING = "pending";
+    public static final String STATUS_ONGOING = "ongoing";
+    public static final String STATUS_LATE = "late";
+    public static final String STATUS_FINISHED = "finished";
+    public static final String STATUS_CANCELLED = "cancelled";
+
 
     //MESSAGE
     //Validation

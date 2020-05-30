@@ -18,6 +18,7 @@
                 <th scope="col">Date de la réservation</th>
                 <th scope="col">Date de retour du prochain ouvrage</th>
                 <th scope="col">Position dans la liste d'attente</th>
+                <th scope="col">Actions</th>
             </tr>
             <tr th:each="ongoingReservation : ${ongoingReservations}">
                 <th th:text="${ongoingReservation.id}"></th>
@@ -26,6 +27,16 @@
                 <th th:if="${ongoingReservation.getNearestReturnDate() != null}" th:text="${#dates.format(ongoingReservation.getNearestReturnDate(), 'dd/MM/yyyy')}"></th>
                 <th th:if="${ongoingReservation.getNearestReturnDate() == null}">Aucune date précise disponible</th>
                 <th th:text="${ongoingReservation.getCurrentUserPositionInQueue()}"></th>
+                <td>
+                    <form th:id="${'reservation-cancel-' + ongoingReservation.id}"
+                          th:action="@{/reservations/{id}/cancel(id = ${ongoingReservation.id})}" method="POST">
+                        <button class="btn btn-danger" type="submit" data-container="body"
+                                data-toggle="popover" data-placement="left" data-trigger="hover"
+                                data-content="Annuler la reservation.">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </form>
+                </td>
             </tr>
         </table>
     </div>
@@ -33,7 +44,7 @@
         Aucune reservation en cours
     </p>
     <div th:if="${!#lists.isEmpty(finishedReservations)}">
-        <h4>Validés</h4>
+        <h4>Validées</h4>
         <table class="table table-hover table-black bg-white">
             <tr class="thead-dark">
                 <th scope="col">Id</th>
@@ -51,7 +62,7 @@
         </table>
     </div>
     <div th:if="${!#lists.isEmpty(cancelledReservations)}">
-        <h4>Annulés</h4>
+        <h4>Annulées</h4>
         <table class="table table-hover table-black bg-white">
             <tr class="thead-dark">
                 <th scope="col">Id</th>

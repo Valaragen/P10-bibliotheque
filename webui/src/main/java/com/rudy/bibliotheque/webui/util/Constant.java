@@ -31,6 +31,7 @@ public class Constant {
     public static final String PENDING_PATH = "/pending";
     public static final String CURRENT_PATH = "/current";
     public static final String SEARCH_PATH = "/search";
+    public static final String CANCEL_PATH = "/cancel";
 
     //PAGES
     public static final String HOME_PAGE = "homePage";

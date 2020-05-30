@@ -155,7 +155,7 @@ public class ReservationService {
             loanCreateDTO.setUserId(reservation.getUserInfo().getId());
             loanCreateDTO.setBookId(book.getId());
             borrowService.saveANewLoan(loanCreateDTO);
-            log.info("New loan on book " + book.getName() + "created for user " + loanCreateDTO.getUserId());
+            log.info("New loan on book " + book.getName() + " created for user " + loanCreateDTO.getUserId());
             validateReservation(reservation);
         } else {
             log.info("No reservations on book, no loan has been created");

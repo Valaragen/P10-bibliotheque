@@ -24,6 +24,7 @@ public class Constant {
     public static final String EXTEND_PATH = "/extend";
     public static final String VALIDATE_PATH = "/validate";
     public static final String RETURNED_PATH = "/returned";
+    public static final String CANCEL_PATH = "/cancel";
     public static final String CURRENT_PATH = "/current";
     public static final String NON_RETURNED_EXPIRED_LOANS_PATH = "/non-returned-and-expired";
     public static final String COPY_CODE_PATH = "/code";

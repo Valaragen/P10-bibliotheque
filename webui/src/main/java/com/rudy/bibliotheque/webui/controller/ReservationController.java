@@ -18,11 +18,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -59,6 +57,19 @@ public class ReservationController {
         }
 
         return Constant.REDIRECT + Constant.RESERVATIONS_PATH + Constant.MY_RESERVATIONS_PATH;
+    }
+
+    @PreAuthorize("hasRole('"+ Constant.USER_ROLE_NAME +"')")
+    @PostMapping(Constant.SLASH_ID_PATH + Constant.CANCEL_PATH)
+    public String cancelReservationForCurrentUser(@PathVariable Long id, HttpServletRequest httpServletRequest) {
+        ResponseEntity<ReservationDTO> reservationDTO = bookApiProxy.cancelMyReservation(id);
+
+        if (reservationDTO.getStatusCode() != HttpStatus.NO_CONTENT) {
+            //TODO add logic notification
+            log.error("Can't extend borrow duration");
+        }
+
+        return Constant.REDIRECT + httpServletRequest.getHeader("referer");
     }
 
     private void loadReservationsInModel(ReservationSearchDTO reservationSearchDTO, Model model) {

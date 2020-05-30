@@ -7,8 +7,6 @@ import org.keycloak.representations.idm.authorization.AuthorizationRequest;
 import org.keycloak.representations.idm.authorization.AuthorizationResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 //TODO The token may not be correctly refreshed as batch are asyncronous ?
 // TODO https://www.keycloak.org/docs/latest/server_admin/index.html DIRECT GRANT
@@ -19,19 +17,6 @@ class AuthInterceptor implements RequestInterceptor {
 
     @Override
     public void apply(RequestTemplate template) {
-//        User borrowingUser = borrow.getUser();
-//        borrowDTO.setUserUsername(borrowingUser.getUsername());
-//        borrowDTO.setUserEmail(borrowingUser.getEmail());
-//
-//        RestTemplate restTemplate = new RestTemplate();
-//
-//        Keycloak keycloak = KeycloakBuilder.builder()
-//                .realm(Constant.REA)
-//                .serverUrl(Constant.KE)
-//                .clientId(clientId)
-//                .clientSecret(clientSecret)
-//                .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
-//                .build();
         AuthzClient authzClient = AuthzClient.create();
         AuthorizationRequest request = new AuthorizationRequest();
         AuthorizationResponse response = authzClient.authorization("batch", "Azerty").authorize(request);

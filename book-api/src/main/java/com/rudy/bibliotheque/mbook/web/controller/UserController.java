@@ -34,19 +34,13 @@ import java.util.List;
 @RequestMapping(Constant.USERS_PATH)
 public class UserController {
 
-    private BookService bookService;
     private ReservationService reservationService;
     private BorrowService borrowService;
-    private CopyService copyService;
-    private UserInfoService userInfoService;
 
     @Autowired
-    public UserController(BookService bookService, ReservationService reservationService, BorrowService borrowService, CopyService copyService, UserInfoService userInfoService) {
-        this.bookService = bookService;
+    public UserController(ReservationService reservationService, BorrowService borrowService) {
         this.reservationService = reservationService;
         this.borrowService = borrowService;
-        this.copyService = copyService;
-        this.userInfoService = userInfoService;
     }
 
     /**
@@ -131,6 +125,22 @@ public class UserController {
         log.info("Method ended");
         return new ResponseEntity<>(newReservation, HttpStatus.CREATED);
     }
+
+    @PreAuthorize("hasRole('" + Constant.USER_ROLE_NAME + "')")
+    @PutMapping(Constant.CURRENT_PATH + Constant.RESERVATIONS_PATH + Constant.SLASH_ID_PATH + Constant.CANCEL_PATH)
+    public ResponseEntity<Reservation> cancelMyReservation(@PathVariable Long id) {
+        Reservation reservation = reservationService.getReservationById(id);
+        if (reservation == null) {
+            throw new NotFoundException("Can't find reservation with id + " + id);
+        }
+        if (!reservation.getUserInfo().getId().equals(ControllerUtil.getUserIdFromToken())) {
+            throw new ProhibitedActionException("You can't cancel a reservation you don't own");
+        }
+        reservationService.cancelReservation(reservation);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
 
     public static UserInfo getUserInfoFromToken() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
