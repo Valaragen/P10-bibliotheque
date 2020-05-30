@@ -1,0 +1,42 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet author="Rudy Boinnard" id="mbook-001">
+        <createTable tableName="reservation">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="reservation_pkey"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="book_id" type="BIGINT"/>
+            <column name="user_info_id" type="VARCHAR(255)"/>
+            <column name="status" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reservation_start_date" type="DATETIME"/>
+            <column name="reservation_end_date" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="Rudy Boinnard" id="mbook-010">
+        <addForeignKeyConstraint baseColumnNames="book_id" baseTableName="reservation"
+                                 constraintName="fk_reservation_book_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="book" validate="true"/>
+    </changeSet>
+
+    <changeSet author="Rudy Boinnard" id="mbook-011">
+        <addForeignKeyConstraint baseColumnNames="user_info_id" baseTableName="reservation"
+                                 constraintName="fk_reservation_user_info_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="user_info" validate="true"/>
+    </changeSet>
+
+    <changeSet id="mbook-012" author="Rudy Boinnard">
+        <modifyDataType tableName="borrow" columnName="deadline_to_retrieve" newDataType="DATETIME"/>
+    </changeSet>
+
+
+
+</databaseChangeLog>

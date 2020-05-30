@@ -1,4 +1,4 @@
-package com.rudy.bibliotheque.batch.processing;
+package com.rudy.bibliotheque.batch.job.lateReturn;
 
 import com.rudy.bibliotheque.batch.dto.BorrowDTO;
 import org.slf4j.Logger;
@@ -16,9 +16,9 @@ import java.util.Locale;
 /**
  * Class used to process objects
  */
-public class BorrowItemProcessor implements ItemProcessor<BorrowDTO, MimeMessage> {
+public class LateReturnProcessor implements ItemProcessor<BorrowDTO, MimeMessage> {
 
-    private static final Logger log = LoggerFactory.getLogger(BorrowItemProcessor.class);
+    private static final Logger log = LoggerFactory.getLogger(LateReturnProcessor.class);
 
     @Autowired
     private JavaMailSender mailSender;
@@ -28,7 +28,7 @@ public class BorrowItemProcessor implements ItemProcessor<BorrowDTO, MimeMessage
 
     private String sender;
 
-    public BorrowItemProcessor(String sender) {
+    public LateReturnProcessor(String sender) {
         this.sender = sender;
     }
 
@@ -48,11 +48,11 @@ public class BorrowItemProcessor implements ItemProcessor<BorrowDTO, MimeMessage
         helper.setCc(sender);
 
         // Create the TEXT subject using Thymeleaf
-        final String content = this.templateEngine.process("email-subject.txt", ctx);
+        final String content = this.templateEngine.process("loan-late-email-subject.txt", ctx);
         helper.setSubject(content);
 
         // Create the HTML body using Thymeleaf
-        final String htmlContent = this.templateEngine.process("email-body.html", ctx);
+        final String htmlContent = this.templateEngine.process("loan-late-email-body.html", ctx);
         helper.setText(htmlContent, true); // true = isHtml
 
         log.info("Preparing message for: " + borrowDTO.getUserInfo().getEmail());

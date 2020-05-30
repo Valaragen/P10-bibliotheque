@@ -8,10 +8,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.stream.Stream;
 
 @Component
 public class LogFilter extends ZuulFilter {
-    Logger logger = LoggerFactory.getLogger(this.getClass());
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
     public String filterType() {
@@ -33,6 +36,11 @@ public class LogFilter extends ZuulFilter {
         HttpServletRequest request = RequestContext.getCurrentContext().getRequest();
 
         logger.info("**** Requête interceptée ****" + request.getRequestURL());
+        Enumeration headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String headerName = (String)headerNames.nextElement();
+            logger.info(headerName + ": " + request.getHeader(headerName));
+        }
 
         return null;
     }

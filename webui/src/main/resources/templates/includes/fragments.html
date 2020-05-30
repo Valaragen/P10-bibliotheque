@@ -49,6 +49,10 @@
                 <a class="nav-link" th:href="@{/loans/my-loans}">Mes emprunts <span th:if="${#httpServletRequest.getRequestURI() == '/loans'}"
                                                                                class="sr-only">(current)</span></a>
             </li>
+            <li class="nav-item" th:classappend="${#httpServletRequest.getRequestURI().contains('/reservations') ? 'active':''}">
+                <a class="nav-link" th:href="@{/reservations/my-reservations}">Mes reservations <span th:if="${#httpServletRequest.getRequestURI() == '/reservations'}"
+                                                                               class="sr-only">(current)</span></a>
+            </li>
         </ul>
         <a sec:authorize="isAnonymous()" class="btn btn-primary d-inline my-2 my-lg-0" th:href="@{/sso/login}" id="loginBtn">Connexion</a>
         <ul sec:authorize="isAuthenticated()" class="navbar-nav ml-auto">

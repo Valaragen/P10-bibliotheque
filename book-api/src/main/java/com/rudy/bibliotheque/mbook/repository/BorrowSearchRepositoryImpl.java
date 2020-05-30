@@ -31,17 +31,17 @@ public class BorrowSearchRepositoryImpl implements BorrowSearchRepository {
                 Path<Date> loanStartDatePath = borrowRoot.get("loanStartDate");
                 Path<Date> loanEndDatePath = borrowRoot.get("loanEndDate");
                 Path<Date> returnedOnPath = borrowRoot.get("returnedOn");
-                if (loanSearch.getStatus().contains(Constant.LOAN_STATUS_PENDING)) {
+                if (loanSearch.getStatus().contains(Constant.STATUS_PENDING)) {
                     statusPredicates.add(cb.isNull(loanStartDatePath));
                 }
-                if (loanSearch.getStatus().contains(Constant.LOAN_STATUS_ONGOING)) {
+                if (loanSearch.getStatus().contains(Constant.STATUS_ONGOING)) {
                     statusPredicates.add(cb.and(cb.isNotNull(loanStartDatePath), cb.isNull(returnedOnPath)));
                 }
-                if (loanSearch.getStatus().contains(Constant.LOAN_STATUS_LATE)) {
+                if (loanSearch.getStatus().contains(Constant.STATUS_LATE)) {
                     Date now = new Date();
                     statusPredicates.add(cb.and(cb.isNull(returnedOnPath), cb.lessThan(loanEndDatePath, now)));
                 }
-                if (loanSearch.getStatus().contains(Constant.LOAN_STATUS_FINISHED)) {
+                if (loanSearch.getStatus().contains(Constant.STATUS_FINISHED)) {
                     statusPredicates.add(cb.isNotNull(returnedOnPath));
                 }
             }
