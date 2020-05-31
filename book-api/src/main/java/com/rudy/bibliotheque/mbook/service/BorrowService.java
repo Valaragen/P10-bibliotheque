@@ -31,9 +31,9 @@ public class BorrowService {
     @Autowired
     private ReservationService reservationService;
 
-    private ApplicationPropertiesConfig appProperties;
     private CopyService copyService;
     private UserInfoService userInfoService;
+    private ApplicationPropertiesConfig appProperties;
     private KeycloakRestTemplate keycloakRestTemplate;
     private BorrowRepository borrowRepository;
     private EmailService emailService;
