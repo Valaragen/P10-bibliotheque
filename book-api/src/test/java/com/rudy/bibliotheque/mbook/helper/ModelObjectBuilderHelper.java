@@ -38,19 +38,19 @@ public abstract class ModelObjectBuilderHelper {
 
     //SAMPLE COPIES
     public static Copy getSampleCopy1ofBook1() {
-        return buildCopy("YUBCEZUVEZ", getSampleBook1(), "neuf", "abimé", true, Collections.singletonList(getSampleOngoingBorrow1()));
+        return buildCopy("YUBCEZUVEZ", getSampleBook1(), "neuf", "abimé", true);
     }
 
     public static Copy getSampleCopy1ofBook2() {
-        return buildCopy("HUBEUYBUEFZ", getSampleBook2(), "neuf", "neuf", true, Collections.singletonList(getSamplePendingBorrow1()));
+        return buildCopy("HUBEUYBUEFZ", getSampleBook2(), "neuf", "neuf", true);
     }
 
     public static Copy getSampleCopy2ofBook2() {
-        return buildCopy("AAUDNZEFFFF", getSampleBook2(), "neuf", "neuf", false, null);
+        return buildCopy("AAUDNZEFFFF", getSampleBook2(), "neuf", "neuf", false);
     }
 
     public static Copy getSampleCopy1ofBook3() {
-        return buildCopy("UNEUVUUEUZZZ", getSampleBook3(), "neuf", "neuf", false, null);
+        return buildCopy("UNEUVUUEUZZZ", getSampleBook3(), "neuf", "neuf", false);
     }
 
     //SAMPLE BORROWS
@@ -96,22 +96,6 @@ public abstract class ModelObjectBuilderHelper {
         return book;
     }
 
-    public static Book buildBook(Long id, String isbn, String name, String description, String author, String publisher,
-                                 Date releaseDate, Integer copyNumber, Integer availableCopyNumber,
-                                 List<Reservation> reservations, List<Reservation> ongoingReservations, List<Copy> copies) {
-        Book book = ModelObjectBuilderHelper.buildBook(id, isbn, name, description, author, publisher, releaseDate, copyNumber, availableCopyNumber);
-        if (reservations != null) {
-            book.setReservations(reservations);
-        }
-        if (ongoingReservations != null) {
-            book.setOngoingReservations(ongoingReservations);
-        }
-        if (copies != null) {
-            book.setCopies(copies);
-        }
-        return book;
-    }
-
     public static Borrow buildBorrow(Long id, Copy copy, UserInfo userInfo, boolean hasDurationExtended, Date loanRequestDate, Date deadlineToRetrieve,
                                      Date loanStartDate, Date loanEndDate, Date returnedOn, String stateBeforeBorrow,
                                      String stateAfterBorrow) {
@@ -146,16 +130,13 @@ public abstract class ModelObjectBuilderHelper {
     }
 
     public static Copy buildCopy(String code, Book book, String stateAtPurchase, String currentState,
-                                 boolean borrowed, List<Borrow> ongoingBorrow) {
+                                 boolean borrowed) {
         Copy copy = new Copy();
         copy.setCode(code);
         copy.setBook(book);
         copy.setStateAtPurchase(stateAtPurchase);
         copy.setCurrentState(currentState);
         copy.setBorrowed(borrowed);
-        if (ongoingBorrow != null) {
-            copy.setOngoingBorrow(ongoingBorrow);
-        }
         return copy;
     }
 

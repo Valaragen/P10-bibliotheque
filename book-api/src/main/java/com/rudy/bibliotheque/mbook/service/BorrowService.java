@@ -167,7 +167,7 @@ public class BorrowService {
             throw new ProhibitedActionException("This loan is already returned");
         }
 
-        if (borrowAdditionalInfos.getStateAfterBorrow() != null) {
+        if (borrowAdditionalInfos != null && borrowAdditionalInfos.getStateAfterBorrow() != null) {
             borrow.setStateAfterBorrow(borrowAdditionalInfos.getStateAfterBorrow());
         } else {
             borrow.setStateAfterBorrow(borrow.getStateBeforeBorrow());

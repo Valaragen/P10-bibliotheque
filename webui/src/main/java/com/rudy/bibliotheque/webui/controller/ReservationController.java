@@ -98,7 +98,7 @@ public class ReservationController {
                     }
 
                     reservation.getBook().getCopies().stream()
-                            .filter((copy) -> copy.getOngoingBorrow().get(0).getLoanEndDate() != null && copy.getOngoingBorrow().get(0).getLoanEndDate().after(new Date()))
+                            .filter((copy) -> !copy.getOngoingBorrow().isEmpty() && copy.getOngoingBorrow().get(0).getLoanEndDate().after(new Date()))
                             .min(Comparator.comparing((copy) -> copy.getOngoingBorrow().get(0).getLoanEndDate())).ifPresent(nextCopyReturn -> reservation.setNearestReturnDate(nextCopyReturn.getOngoingBorrow().get(0).getLoanEndDate()));
                     break;
                 case Constant.STATUS_FINISHED:
