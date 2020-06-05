@@ -5,6 +5,7 @@ import com.rudy.bibliotheque.mbook.dto.LoanCreateDTO;
 import com.rudy.bibliotheque.mbook.helper.ModelObjectBuilderHelper;
 import com.rudy.bibliotheque.mbook.model.Borrow;
 import com.rudy.bibliotheque.mbook.model.Copy;
+import com.rudy.bibliotheque.mbook.model.UserInfo;
 import com.rudy.bibliotheque.mbook.repository.BorrowRepository;
 import com.rudy.bibliotheque.mbook.search.LoanSearch;
 import com.rudy.bibliotheque.mbook.web.exception.InvalidIdException;
@@ -15,18 +16,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.keycloak.adapters.springsecurity.client.KeycloakRestTemplate;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import java.util.*;
 
@@ -214,7 +208,7 @@ public class BorrowServiceTest {
         }
 
         @Test
-        void validateALoan_loanIsAlreadyValidated_throwProhibitedActionException(){
+        void validateALoan_loanIsAlreadyValidated_throwProhibitedActionException() {
             Long loanId = 1L;
             Borrow alreadyValidatedBorrow = new Borrow();
             alreadyValidatedBorrow.setLoanStartDate(new Date());
@@ -317,6 +311,68 @@ public class BorrowServiceTest {
         }
     }
 
+    @Nested
+    class cancelLoanTest {
+        @Test
+        void cancelLoanReturn_givenOngoingLoan_throwProhibitedActionException() {
+            Borrow borrow = new Borrow();
+            borrow.setLoanStartDate(new Date());
 
+            Assertions.assertThatThrownBy(() -> objectToTest.cancelLoan(borrow)).isInstanceOf(ProhibitedActionException.class);
+        }
+
+        @Test
+        void cancelLoanReturn_whenMethodCall_throwShouldDeleteInDb() {
+            Borrow borrow = ModelObjectBuilderHelper.getSamplePendingBorrow1();
+            Mockito.doNothing().when(borrowRepository).deleteById(borrow.getId());
+
+            objectToTest.cancelLoan(borrow);
+
+            Mockito.verify(borrowRepository).deleteById(borrow.getId());
+        }
+    }
+
+    @Nested
+    class isUserBorrowingBookTest {
+        @Test
+        void isUserBorrowingBookTest_userBorrowTheGivenBook_returnTrue() {
+            UserInfo userInfo = ModelObjectBuilderHelper.getSampleUserInfo1();
+            Borrow ongoingBorrow = ModelObjectBuilderHelper.getSampleOngoingBorrow1();
+            ongoingBorrow.setUserInfo(userInfo);
+            List<Borrow> userBorrow = new ArrayList<>();
+            userBorrow.add(ongoingBorrow);
+            Mockito.when(borrowRepository.findAllBySearch(Mockito.any(LoanSearch.class))).thenReturn(userBorrow);
+
+            boolean result = objectToTest.isUserBorrowingBook(ongoingBorrow.getUserInfo().getId(), ongoingBorrow.getCopy().getBook().getId());
+
+            Assertions.assertThat(result).isTrue();
+        }
+
+        @Test
+        void isUserBorrowingBookTest_userDoNotBorrowTheGivenBook_returnFalse() {
+            Long notBorrowedBookId = 1000L;
+            UserInfo userInfo = ModelObjectBuilderHelper.getSampleUserInfo1();
+            Borrow ongoingBorrow = ModelObjectBuilderHelper.getSampleOngoingBorrow1();
+            ongoingBorrow.setUserInfo(userInfo);
+            List<Borrow> userBorrow = new ArrayList<>();
+            userBorrow.add(ongoingBorrow);
+            Mockito.when(borrowRepository.findAllBySearch(Mockito.any(LoanSearch.class))).thenReturn(userBorrow);
+
+            boolean result = objectToTest.isUserBorrowingBook(ongoingBorrow.getUserInfo().getId(), notBorrowedBookId);
+
+            Assertions.assertThat(result).isFalse();
+        }
+
+        @Test
+        void isUserBorrowingBookTest_userDoNotBorrowAnyBooks_returnFalse() {
+            Long bookId = 1L;
+            String userId = "user";
+            Mockito.when(borrowRepository.findAllBySearch(Mockito.any(LoanSearch.class))).thenReturn(new ArrayList<>());
+
+            boolean result = objectToTest.isUserBorrowingBook(userId, bookId);
+
+            Assertions.assertThat(result).isFalse();
+        }
+    }
 
 }
