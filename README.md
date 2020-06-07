@@ -84,7 +84,7 @@ Non integré sur ce repository git, keycloak est necessaire au fonctionnement de
    >  Vous pouvez consulter les différents endpoints accessible via l'url http://localhost:9001/swagger-ui.html#/
 9. Pour tester l'api web avec **des scénarios de tests d'integration postman**
    1. Depuis l'interface de keycloak, activez l'option **"direct grant"** pour le client **"webui"**
-   2. **Téléchargez et importez** la **collection postman** de l'api.
+   2. **Téléchargez et importez** la [**collection postman** de l'api](https://github.com/Valaragen/P10-bibliotheque/tree/master/postman_API_integration_test).
    3. **Depuis postman**, lancez un des scénarios contenu dans le dossier **"integration test"**
 ## Diagrammes
 ### Base de donnée de l'api
