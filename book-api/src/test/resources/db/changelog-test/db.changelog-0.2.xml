@@ -1,0 +1,149 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="mbook-001" author="rudy boinnard">
+        <comment>Add sample books</comment>
+        <insert tableName="book">
+            <column name="version" value="1"/>
+            <column name="isbn" value="9782226326034"/>
+            <column name="name" value="Anatomie De L'horreur"/>
+            <column name="description"
+                    value="« Nous nous réfugions dans des terreurs pour de faux afin d'éviter que les vraies nous terrassent, nous gèlent sur place et nous empêchent de mener notre vie quotidienne. » Stephen King
+
+Depuis Carrie jusqu'à Sleeping beauties, Stephen King, l'écrivain à l'imagination débordante et à l'inégalable talent de conteur, a redéfini le genre de l'épouvante et du fantastique. Qui mieux que lui pouvait disséquer la structure, les origines, les influences de ce phénomène qui constitue la matière première de son oeuvre ?
+
+Sur le ton d'une conversation effroyablement drôle et enrichissante, Stephen King nous révèle son monde secret - son enfance, ses premières terreurs, ses idoles... - et dessine les grandes lignes d'un univers fascinant qui fait partie de notre patrimoine, du Projet Blair Witch à L'Exorciste en passant les romans de Ray Bradbury ou de J.G. Ballard.
+
+Un essai culte, couronné par le prix Hugo, le prix Locus et le grand prix de l'Imaginaire, dans une nouvelle édition revue et enrichie de deux préfaces inédites de Stephen King"
+            />
+            <column name="author" value="Stephen King"/>
+            <column name="publisher" value="Educa Books"/>
+            <column name="release_date" valueDate="2018-10-15"/>
+            <column name="copy_number" value="4"/>
+            <column name="available_copy_number" value="3"/>
+        </insert>
+        <insert tableName="book">
+            <column name="version" value="1"/>
+            <column name="isbn" value="9782266126304"/>
+            <column name="name" value="L'Oeil Du Loup"/>
+            <column name="description"
+                    value="Dans un zoo, un vieux loup et un jeune enfant africain se rencontrent. Leurs yeux racontent leurs histoires de vie. Pour l'un, c'est l'Alaska et la vie sauvage menacée par l'homme, pour l'autre c'est la famine en Afrique et l'art de survivre ... Une histoire insolite et belle sur l'amitié et la survie."
+            />
+            <column name="author" value="Pennac Daniel"/>
+            <column name="publisher" value="Presse Pocket"/>
+            <column name="release_date" valueDate="2002-12-01"/>
+            <column name="copy_number" value="4"/>
+            <column name="available_copy_number" value="3"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="mbook-002" author="rudy boinnard">
+        <comment>Add some book copies</comment>
+        <insert tableName="copy">
+            <column name="version" value="1"/>
+            <column name="book_id" valueComputed="(SELECT id FROM book WHERE isbn='9782226326034')"/>
+            <column name="code" value="3642073b9bf67"/>
+            <column name="current_state" value="neuf"/>
+            <column name="borrowed" valueBoolean="true"/>
+            <column name="state_at_purchase" value="neuf"/>
+        </insert>
+        <insert tableName="copy">
+            <column name="version" value="1"/>
+            <column name="book_id" valueComputed="(SELECT id FROM book WHERE isbn='9782226326034')"/>
+            <column name="code" value="36422082107b8"/>
+            <column name="current_state" value="neuf"/>
+            <column name="borrowed" valueBoolean="false"/>
+            <column name="state_at_purchase" value="neuf"/>
+        </insert>
+        <insert tableName="copy">
+            <column name="version" value="1"/>
+            <column name="book_id" valueComputed="(SELECT id FROM book WHERE isbn='9782226326034')"/>
+            <column name="code" value="364268ebe67a6"/>
+            <column name="current_state" value="neuf"/>
+            <column name="borrowed" valueBoolean="false"/>
+            <column name="state_at_purchase" value="neuf"/>
+        </insert>
+        <insert tableName="copy">
+            <column name="version" value="1"/>
+            <column name="book_id" valueComputed="(SELECT id FROM book WHERE isbn='9782226326034')"/>
+            <column name="code" value="3642735b33624"/>
+            <column name="current_state" value="neuf"/>
+            <column name="borrowed" valueBoolean="false"/>
+            <column name="state_at_purchase" value="neuf"/>
+        </insert>
+
+        <insert tableName="copy">
+            <column name="version" value="1"/>
+            <column name="book_id" valueComputed="(SELECT id FROM book WHERE isbn='9782266126304')"/>
+            <column name="code" value="364224c4a3c5f"/>
+            <column name="current_state" value="neuf"/>
+            <column name="borrowed" valueBoolean="true"/>
+            <column name="state_at_purchase" value="neuf"/>
+        </insert>
+        <insert tableName="copy">
+            <column name="version" value="1"/>
+            <column name="book_id" valueComputed="(SELECT id FROM book WHERE isbn='9782266126304')"/>
+            <column name="code" value="36426459ad6bc"/>
+            <column name="current_state" value="neuf"/>
+            <column name="borrowed" valueBoolean="false"/>
+            <column name="state_at_purchase" value="neuf"/>
+        </insert>
+        <insert tableName="copy">
+            <column name="version" value="1"/>
+            <column name="book_id" valueComputed="(SELECT id FROM book WHERE isbn='9782266126304')"/>
+            <column name="code" value="3642665a7d439"/>
+            <column name="current_state" value="neuf"/>
+            <column name="borrowed" valueBoolean="false"/>
+            <column name="state_at_purchase" value="neuf"/>
+        </insert>
+        <insert tableName="copy">
+            <column name="version" value="1"/>
+            <column name="book_id" valueComputed="(SELECT id FROM book WHERE isbn='9782266126304')"/>
+            <column name="code" value="364267945b136"/>
+            <column name="current_state" value="neuf"/>
+            <column name="borrowed" valueBoolean="false"/>
+            <column name="state_at_purchase" value="neuf"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="mbook-003" author="rudy boinnard">
+        <comment>Add a test user</comment>
+        <insert tableName="user_info">
+            <column name="version" value="1"/>
+            <column name="id" value="ed2afb4e-c552-47e9-9fab-48b59cd544b1"/>
+            <column name="username" value="user"/>
+            <column name="email" value="user@gmail.com"/>
+            <column name="first_name" value="useri"/>
+            <column name="last_name" value="usero"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="mbook-004" author="rudy boinnard">
+        <comment>Add an expired borrow and a not expired one</comment>
+        <insert tableName="borrow">
+            <column name="version" value="1"/>
+            <column name="user_info_id" valueComputed="(SELECT id FROM user_info WHERE username='user')"/>
+            <column name="loan_request_date" valueDate="2020-01-01"/>
+            <column name="deadline_to_retrieve" valueDate="2020-01-02"/>
+            <column name="copy_code" valueComputed="(SELECT code FROM copy WHERE code='3642073b9bf67')"/>
+            <column name="has_duration_extended" valueBoolean="false"/>
+            <column name="loan_start_date" valueDate="2020-01-01"/>
+            <column name="loan_end_date" valueDate="2020-01-14"/>
+            <column name="state_before_borrow" value="neuf"/>
+        </insert>
+
+        <insert tableName="borrow">
+            <column name="version" value="1"/>
+            <column name="user_info_id" valueComputed="(SELECT id FROM user_info WHERE username='user')"/>
+            <column name="loan_request_date" valueDate="2020-01-01"/>
+            <column name="deadline_to_retrieve" valueDate="2020-01-02"/>
+            <column name="copy_code" valueComputed="(SELECT code FROM copy WHERE code='364224c4a3c5f')"/>
+            <column name="has_duration_extended" valueBoolean="false"/>
+            <column name="loan_start_date" valueDate="2020-01-27"/>
+            <column name="loan_end_date" valueDate="2022-02-30"/>
+            <column name="state_before_borrow" value="neuf"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

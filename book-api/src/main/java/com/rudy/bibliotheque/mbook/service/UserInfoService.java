@@ -21,24 +21,12 @@ public class UserInfoService {
         this.userInfoRepository = userInfoRepository;
     }
 
-    public List<UserInfo> getAllUserInfo() {
-        return userInfoRepository.findAll();
-    }
-
     public UserInfo getUserInfoById(String id) {
         return userInfoRepository.findById(id).orElse(null);
     }
 
     public UserInfo saveUserInfo(UserInfo userInfo){
         return userInfoRepository.save(userInfo);
-    }
-
-    public void deleteUserInfo(UserInfo userInfo){
-        userInfoRepository.delete(userInfo);
-    }
-
-    public void deleteUserInfoById(String id){
-        userInfoRepository.deleteById(id);
     }
 
 }

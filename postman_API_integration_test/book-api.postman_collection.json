@@ -1,0 +1,2203 @@
+{
+	"info": {
+		"_postman_id": "d139e414-4486-40b3-8fd8-85bff4797d01",
+		"name": "book-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Integration tests",
+			"item": [
+				{
+					"name": "Scenario borrow",
+					"item": [
+						{
+							"name": "Fetch current user PENDING AND ONGOING loans",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "5b590e38-05f7-418d-8a85-304f7aaad425",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response is an object\", function () {\r",
+											"    pm.response.to.be.an('object'); \r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:9001/users/current/loans?status=pending,ongoing",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"users",
+										"current",
+										"loans"
+									],
+									"query": [
+										{
+											"key": "status",
+											"value": "pending,ongoing"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create borrow on book with id 1 for current user ",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "8422a00a-b869-4785-b4ef-9e3c548d5360",
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response is an object\", function () {\r",
+											"    pm.response.to.be.an('object'); \r",
+											"});\r",
+											"\r",
+											"// save the `borrowId` returned in the response as an environment variable\r",
+											"let jsonResponse = pm.response.json();\r",
+											"pm.environment.set(\"borrowId\", jsonResponse.id);\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"bookId\":\"1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:9001/users/current/loans",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"users",
+										"current",
+										"loans"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Try to borrow the same book twice return 403",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "9725c78f-5407-4f07-9485-c6e1f3633b01",
+										"exec": [
+											"pm.test(\"User can't have two active borrow of the same book. Status code is 403\", function () {\r",
+											"    pm.response.to.have.status(403);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"bookId\":\"1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:9001/users/current/loans",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"users",
+										"current",
+										"loans"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Verify new loan in current user PENDING loans",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "7f077f9e-f648-44cf-9029-22333e153d44",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Borrow id exist\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    let borrowId = pm.environment.get(\"borrowId\");\r",
+											"    var borrowId_list = [];\r",
+											"    jsonData.forEach(function(list) {\r",
+											"        borrowId_list.push(list.id);\r",
+											"    });\r",
+											"    pm.expect(borrowId_list).to.include(borrowId);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:9001/users/current/loans?status=pending",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"users",
+										"current",
+										"loans"
+									],
+									"query": [
+										{
+											"key": "status",
+											"value": "pending"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Validate loan (STAFF ONLY)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ec4bc249-6a6c-419f-95f0-40c4171dd60f",
+										"exec": [
+											"pm.test(\"Status code is 204 no-content\", function () {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": {\r\n        \"code\": \"2\",\r\n        \"book\": {\r\n            \"version\": 2,\r\n            \"id\": 1,\r\n            \"isbn\": \"9782226326034\",\r\n            \"name\": \"Anatomie De L'horreure\",\r\n            \"description\": \"« Nous nous réfugions dans des terreurs pour de faux afin d'éviter que les vraies nous terrassent, nous gèlent sur place et nous empêchent de mener notre vie quotidienne. » Stephen King  Depuis Carrie jusqu'à Sleeping beauties, Stephen King, l'écrivain à l'imagination débordante et à l'inégalable talent de conteur, a redéfini le genre de l'épouvante et du fantastique. Qui mieux que lui pouvait disséquer la structure, les origines, les influences de ce phénomène qui constitue la matière première de son oeuvre ?  Sur le ton d'une conversation effroyablement drôle et enrichissante, Stephen King nous révèle son monde secret - son enfance, ses premières terreurs, ses idoles... - et dessine les grandes lignes d'un univers fascinant qui fait partie de notre patrimoine, du Projet Blair Witch à L'Exorciste en passant les romans de Ray Bradbury ou de J.G. Ballard.  Un essai culte, couronné par le prix Hugo, le prix Locus et le grand prix de l'Imaginaire, dans une nouvelle édition revue et enrichie de deux préfaces inédites de Stephen King\",\r\n            \"author\": \"Stephen King\",\r\n            \"publisher\": \"Educa Books\",\r\n            \"releaseDate\": \"2018-10-15\",\r\n            \"copyNumber\": null,\r\n            \"availableCopyNumber\": null\r\n        }\r\n    },\r\n    \"stateAtPurchase\": \"neuf\",\r\n    \"currentState\": \"neuf\",\r\n    \"borrowed\": false\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:9001/loans/{{borrowId}}/validate",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"loans",
+										"{{borrowId}}",
+										"validate"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Fetch current user ONGOING loans",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "963dc905-7c71-4077-a229-693b2b11058d",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Borrow id exist\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    let borrowId = pm.environment.get(\"borrowId\");\r",
+											"    var borrowId_list = [];\r",
+											"    jsonData.forEach(function(list) {\r",
+											"        borrowId_list.push(list.id);\r",
+											"    });\r",
+											"    pm.expect(borrowId_list).to.include(borrowId);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:9001/users/current/loans?status=ongoing",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"users",
+										"current",
+										"loans"
+									],
+									"query": [
+										{
+											"key": "status",
+											"value": "ongoing"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Save loan return (STAFF ONLY)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "a8c0ed17-1b7d-4cb8-9c67-9e54315fdcd0",
+										"exec": [
+											"pm.test(\"Status code is 204 no-content\", function () {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"stateAfterBorrow\": \"abimé\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:9001/loans/{{borrowId}}/returned",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"loans",
+										"{{borrowId}}",
+										"returned"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Fetch current user FINISHED loans",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "aa85f4ae-e4f8-4cb2-9f10-c46f8987fa11",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Borrow id exist\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    let borrowId = pm.environment.get(\"borrowId\");\r",
+											"    var borrowId_list = [];\r",
+											"    jsonData.forEach(function(list) {\r",
+											"        borrowId_list.push(list.id);\r",
+											"    });\r",
+											"    pm.expect(borrowId_list).to.include(borrowId);\r",
+											"});\r",
+											"\r",
+											"pm.environment.unset(\"borrowId\");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:9001/users/current/loans?status=finished",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"users",
+										"current",
+										"loans"
+									],
+									"query": [
+										{
+											"key": "status",
+											"value": "finished"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "997023bf-8f1f-48a3-b5fc-a39328a11711",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "23efb2de-d865-4566-9205-54d559305712",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Scenario reservation",
+					"item": [
+						{
+							"name": "Fetch all books",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "e1ccdc2d-7d64-456b-892b-0f18e4ccaf1f",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"var jsonData = pm.response.json();\r",
+											"var isbn_list = [];\r",
+											"jsonData.forEach(function(list) {\r",
+											"    isbn_list.push(list.isbn);\r",
+											"});\r",
+											"\r",
+											"var randomIsbn = 0;\r",
+											"\r",
+											"do {\r",
+											"    randomIsbn = _.random(1000000000000, 9999999999999);\r",
+											"} \r",
+											"while (isbn_list.includes(randomIsbn));\r",
+											"console.log(randomIsbn);\r",
+											"\r",
+											"pm.environment.set(\"randomIsbn\", randomIsbn);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://localhost:9001/books",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"books"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create a new book for this scenario",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "4795f87c-859b-4d4b-a8f7-9f26145ee994",
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response is an object\", function () {\r",
+											"    pm.response.to.be.an('object'); \r",
+											"});\r",
+											"\r",
+											"// save the `borrowId` returned in the response as an environment variable\r",
+											"let jsonResponse = pm.response.json();\r",
+											"pm.environment.set(\"bookId\", jsonResponse.id);\r",
+											"\r",
+											"pm.environment.unset(\"randomIsbn\");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"isbn\":\"{{randomIsbn}}\",\n\t\"name\":\"test\",\n\t\"author\":\"testAuthor\",\n\t\"publisher\":\"testPublisher\",\n\t\"releaseDate\":\"2020-06-12\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:9001/books",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"books"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Try to reserve a book without copies return 403 FORBIDDEN",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "6864a250-59b8-446a-ad9b-de9b32c3c802",
+										"exec": [
+											"pm.test(\"Status code is 403 FORBIDDEN\", function () {\r",
+											"    pm.response.to.have.status(403);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Error message is : This book got no copy to reserve\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.message).to.eql(\"This book got no copy to reserve\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"userId\": 1,\n\t\"bookId\": \"{{bookId}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:9001/users/current/reservations",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"users",
+										"current",
+										"reservations"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add a book copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "f72d04be-ae88-452d-9b07-c5518595f006",
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"bookId\": {{bookId}},\n\t\"stateAtPurchase\": \"neuf\"\n\t\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:9001/copies",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"copies"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Try to reserve a book when not all copies are borrowed return 403 FORBIDDEN",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "42b96cde-a9b4-4446-9c66-dbb9c47695e2",
+										"exec": [
+											"pm.test(\"Status code is 403 FORBIDDEN\", function () {\r",
+											"    pm.response.to.have.status(403);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Error message is : Reservations are only available when all copies of the book are currently borrowed\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.message).to.eql(\"Reservations are only available when all copies of the book are currently borrowed\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"userId\": 1,\n\t\"bookId\": \"{{bookId}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:9001/users/current/reservations",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"users",
+										"current",
+										"reservations"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create borrow on book from 'user'",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "823934b7-74cc-4289-8337-fe64b94523de",
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response is an object\", function () {\r",
+											"    pm.response.to.be.an('object'); \r",
+											"});\r",
+											"\r",
+											"// save the `borrowId` returned in the response as an environment variable\r",
+											"let jsonResponse = pm.response.json();\r",
+											"pm.environment.set(\"borrowId\", jsonResponse.id);\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"userId\":\"ed2afb4e-c552-47e9-9fab-48b59cd544b1\",\n\t\"bookId\":\"{{bookId}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:9001/loans",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"loans"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Reserve book for current user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "79715e2a-8ca0-4ea8-b718-9dcd3b006ea0",
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"// save the `reservationId` returned in the response as an environment variable\r",
+											"let jsonResponse = pm.response.json();\r",
+											"pm.environment.set(\"reservationId\", jsonResponse.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"userId\": 1,\n\t\"bookId\": \"{{bookId}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:9001/users/current/reservations",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"users",
+										"current",
+										"reservations"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Try to reserve the same book twice return 403 FORBIDDEN",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "32557d7a-ed81-40f7-9384-77d26a287474",
+										"exec": [
+											"pm.test(\"Status code is 403 FORBIDDEN\", function () {\r",
+											"    pm.response.to.have.status(403);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Error message is : You can't reserve the same book twice\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.message).to.eql(\"You can't reserve the same book twice\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"userId\": 1,\n\t\"bookId\": \"{{bookId}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:9001/users/current/reservations",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"users",
+										"current",
+										"reservations"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Fetch current user Reservations",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "e4a88e18-b350-4868-a1c4-92ea2d7ead09",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"reservation id exist\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    let reservationId = pm.environment.get(\"reservationId\");\r",
+											"    var reservationId_list = [];\r",
+											"    jsonData.forEach(function(list) {\r",
+											"        reservationId_list.push(list.id);\r",
+											"    });\r",
+											"    pm.expect(reservationId_list).to.include(reservationId);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://localhost:9001/users/current/reservations?status=ongoing",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"users",
+										"current",
+										"reservations"
+									],
+									"query": [
+										{
+											"key": "status",
+											"value": "ongoing"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Cancel reservation of current user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "10109110-906c-4571-9790-0f0200a5c695",
+										"exec": [
+											"pm.test(\"Status code is 204\", function () {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9001/users/current/reservations/{{reservationId}}/cancel",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"users",
+										"current",
+										"reservations",
+										"{{reservationId}}",
+										"cancel"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Try cancelling an already cancelled loan should return 403 FORBIDDEN",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "b4adc7d4-8805-4939-a109-7df6f7688ef3",
+										"exec": [
+											"pm.test(\"Status code is 403\", function () {\r",
+											"    pm.response.to.have.status(403);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Error message is : This reservation is already cancelled\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.message).to.eql(\"This reservation is already cancelled\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9001/users/current/reservations/{{reservationId}}/cancel",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"users",
+										"current",
+										"reservations",
+										"{{reservationId}}",
+										"cancel"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Verify reservation not ongoing",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "a786d66b-5c02-4457-9543-af01e86aac17",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"reservation id not exist in ongoing user reservations list\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    let reservationId = pm.environment.get(\"reservationId\");\r",
+											"    var reservationId_list = [];\r",
+											"    jsonData.forEach(function(list) {\r",
+											"        reservationId_list.push(list.id);\r",
+											"    });\r",
+											"    pm.expect(reservationId_list).to.not.include(reservationId);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://localhost:9001/users/current/reservations?status=ongoing",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"users",
+										"current",
+										"reservations"
+									],
+									"query": [
+										{
+											"key": "status",
+											"value": "ongoing"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Verify reservation is cancelled",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "e60bd437-0030-4fad-9207-6cb3debe3570",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"reservation id exist in cancelled user reservations list\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    let reservationId = pm.environment.get(\"reservationId\");\r",
+											"    var reservationId_list = [];\r",
+											"    jsonData.forEach(function(list) {\r",
+											"        reservationId_list.push(list.id);\r",
+											"    });\r",
+											"    pm.expect(reservationId_list).to.include(reservationId);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://localhost:9001/users/current/reservations?status=cancelled",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"users",
+										"current",
+										"reservations"
+									],
+									"query": [
+										{
+											"key": "status",
+											"value": "cancelled"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Reserve book for current user Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "c997e7df-8562-41f3-9c1b-050836efe0d7",
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"// save the `reservationId` returned in the response as an environment variable\r",
+											"let jsonResponse = pm.response.json();\r",
+											"pm.environment.set(\"reservationId\", jsonResponse.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"userId\": 1,\n\t\"bookId\": \"{{bookId}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:9001/users/current/reservations",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"users",
+										"current",
+										"reservations"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Cancel the pending borrow previously created",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "91bf6a1c-f634-4f8d-9b2c-017a4843c6aa",
+										"exec": [
+											"pm.test(\"Status code is 204\", function () {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9001/loans/{{borrowId}}/cancel",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"loans",
+										"{{borrowId}}",
+										"cancel"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Verify reservation is finished",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "97486062-c3ad-4f72-969c-e995715dfc23",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"reservation id exist in finished user reservations list\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    let reservationId = pm.environment.get(\"reservationId\");\r",
+											"    var reservationId_list = [];\r",
+											"    jsonData.forEach(function(list) {\r",
+											"        reservationId_list.push(list.id);\r",
+											"    });\r",
+											"    pm.expect(reservationId_list).to.include(reservationId);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9001/users/current/reservations?status=finished",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"users",
+										"current",
+										"reservations"
+									],
+									"query": [
+										{
+											"key": "status",
+											"value": "finished"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Verify new pending borrow on book has been created for current user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "f261e844-a586-459a-b26a-c21c8f7f1b71",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"book id exist in a pending user borrow\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    let bookId = pm.environment.get(\"bookId\");\r",
+											"    var borrowBookId_list = [];\r",
+											"    jsonData.forEach(function(list) {\r",
+											"        borrowBookId_list.push(list.copy.book.id);\r",
+											"        if(list.copy.book.id == bookId) {\r",
+											"            pm.environment.set(\"borrowId\", list.id);\r",
+											"        }\r",
+											"    });\r",
+											"    pm.expect(borrowBookId_list).to.include(bookId);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9001/users/current/loans?status=pending",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"users",
+										"current",
+										"loans"
+									],
+									"query": [
+										{
+											"key": "status",
+											"value": "pending"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "End scenario",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "a4424183-18dc-43ec-b06d-90b9de517ae8",
+										"exec": [
+											"pm.test(\"Status code is 204\", function () {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});\r",
+											"\r",
+											"pm.environment.unset(\"bookId\");\r",
+											"pm.environment.unset(\"borrowId\");\r",
+											"pm.environment.unset(\"reservationId\");"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9001/loans/{{borrowId}}/cancel",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"loans",
+										"{{borrowId}}",
+										"cancel"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "333cb0ca-a81e-46b2-b9fa-9cbc480fc6b9",
+								"type": "text/javascript",
+								"exec": [
+									"pm.environment.set"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "f973787d-0c7d-4f69-a2bb-3f2d0e46aa52",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Scenario book",
+					"item": [
+						{
+							"name": "Fetch all books",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "61fb41cf-785e-4d67-90f4-f8c3d101f86e",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"var jsonData = pm.response.json();\r",
+											"var isbn_list = [];\r",
+											"jsonData.forEach(function(list) {\r",
+											"    isbn_list.push(list.isbn);\r",
+											"});\r",
+											"\r",
+											"var randomIsbn = 0;\r",
+											"\r",
+											"do {\r",
+											"    randomIsbn = _.random(1000000000000, 9999999999999);\r",
+											"} \r",
+											"while (isbn_list.includes(randomIsbn));\r",
+											"console.log(randomIsbn);\r",
+											"\r",
+											"pm.environment.set(\"randomIsbn\", randomIsbn);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://localhost:9001/books",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"books"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create a new book",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "d6136ebc-7aff-47ae-86ba-13dc71359978",
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response is an object\", function () {\r",
+											"    pm.response.to.be.an('object'); \r",
+											"});\r",
+											"\r",
+											"// save the `borrowId` returned in the response as an environment variable\r",
+											"let jsonResponse = pm.response.json();\r",
+											"pm.environment.set(\"bookId\", jsonResponse.id);\r",
+											"\r",
+											"pm.environment.unset(\"randomIsbn\");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"isbn\":\"{{randomIsbn}}\",\n\t\"name\":\"test\",\n\t\"author\":\"testAuthor\",\n\t\"publisher\":\"testPublisher\",\n\t\"releaseDate\":\"2020-06-12\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:9001/books",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"books"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Verify new book exist",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "fe62bb34-daf3-42bd-83d3-47afca2fd9c1",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Book id exist\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    let bookId = pm.environment.get(\"bookId\");\r",
+											"    pm.expect(jsonData.id).to.eql(bookId);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://localhost:9001/books/{{bookId}}",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"books",
+										"{{bookId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update book",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "23381e54-c704-4cf9-b828-f35103a1a009",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"new book is returned\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    let bookId = pm.environment.get(\"bookId\");\r",
+											"    pm.expect(jsonData.id).to.eql(bookId);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"name\":\"updated\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:9001/books/{{bookId}}",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"books",
+										"{{bookId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Verify book has been updated",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "a5fd5328-8a07-42c1-8c76-c90951f4a361",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Book name is updated\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.name).to.eql(\"updated\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://localhost:9001/books/{{bookId}}",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"books",
+										"{{bookId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete book",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "73d5a897-4b59-4c8a-992e-9f7b49072aff",
+										"exec": [
+											"pm.test(\"Status code is 204\", function () {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9001/books/{{bookId}}",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"books",
+										"{{bookId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Verify book deletion",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "695b189b-c25e-4021-951d-b25650283bfb",
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});\r",
+											"\r",
+											"pm.environment.unset(\"bookId\");"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9001/books/{{bookId}}",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"books",
+										"{{bookId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "a5c63c4b-edf1-4eea-a1d2-9e557c8825a0",
+						"type": "text/javascript",
+						"exec": [
+							"// Adapted from: https://gist.github.com/harryi3t/dd5c61451206047db70710ff6174c3c1",
+							"function getvar(variableName) {",
+							"    let value = pm.variables.get(variableName);",
+							"    if (!value) throw new Error(",
+							"        `Variable '${variableName}' is not defined. Do you forget to select an environment?`);",
+							"    return value;",
+							"}",
+							"",
+							"var server = \"http://localhost:8080\";",
+							"var realm = \"bibliotheque\";",
+							"var clientCredentialsGrantType = \"client_credentials\";",
+							"var passwordGrantType = \"password\";",
+							"var clientId     = \"webui\";",
+							"var clientSecret = \"53ab1cbc-91e0-4699-a587-c4039eb48a12\";",
+							"var username = \"staff\";",
+							"var password = \"Azerty\";",
+							"var scope = \"openid%20profile%20email\"",
+							"",
+							"var url  = `${server}/auth/realms/${realm}/protocol/openid-connect/token`;",
+							"var data = `grant_type=${passwordGrantType}&client_id=${clientId}&client_secret=${clientSecret}&username=${username}&password=${password}&scope=${scope}`;",
+							"",
+							"pm.sendRequest({",
+							"    url: url,",
+							"    method: 'POST',",
+							"    header: { 'Content-Type': 'application/x-www-form-urlencoded'},",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: data",
+							"    }",
+							"},  function(err, response) {",
+							"    ",
+							"    var response_json = response.json();",
+							"    var token = response_json.access_token;",
+							"    pm.environment.set('accessToken', token);",
+							"    console.log(token);",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "6f395d9f-e7e1-4da6-9c64-35f6afb7abb0",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Request",
+			"item": [
+				{
+					"name": "Create a new loan",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"userId\": \"ed2afb4e-c552-47e9-9fab-48b59cd544b1\",\n\t\"bookId\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9001/loans",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"loans"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Save loan return",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"stateAfterBorrow\": \"abimé\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9001/loans/1/returned",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"loans",
+								"1",
+								"returned"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add copy",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"bookId\": 1,\n\t\"stateAtPurchase\": \"neuf\"\n\t\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9001/copies",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"copies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get loans of current user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9001/users/current/loans",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"users",
+								"current",
+								"loans"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create reservation for current user",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"userId\": 1,\n\t\"bookId\": \"1\"\n\t\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9001/users/current/reservations",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"users",
+								"current",
+								"reservations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create borrow for current user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"bookId\"=\"1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9001/users/current/loans",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"users",
+								"current",
+								"loans"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create a new book",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "02f7d514-d7be-459c-85ba-567bbf9dc212",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response is an object\", function () {\r",
+									"    pm.response.to.be.an('object'); \r",
+									"});\r",
+									"\r",
+									"// save the `borrowId` returned in the response as an environment variable\r",
+									"let jsonResponse = pm.response.json();\r",
+									"pm.environment.set(\"bookId\", jsonResponse.id);\r",
+									"\r",
+									"pm.environment.unset(\"randomIsbn\");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"isbn\":\"{{randomIsbn}}\",\n\t\"name\":\"test\",\n\t\"author\":\"testAuthor\",\n\t\"publisher\":\"testPublisher\",\n\t\"releaseDate\":\"2020-06-12\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9001/books",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"books"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "c82b4fad-1e49-45bc-a262-3c2fe98f696d",
+						"type": "text/javascript",
+						"exec": [
+							"// Adapted from: https://gist.github.com/harryi3t/dd5c61451206047db70710ff6174c3c1",
+							"function getvar(variableName) {",
+							"    let value = pm.variables.get(variableName);",
+							"    if (!value) throw new Error(",
+							"        `Variable '${variableName}' is not defined. Do you forget to select an environment?`);",
+							"    return value;",
+							"}",
+							"",
+							"// let tokenUrl = getvar('tokenUrl');",
+							"// let clientId = getvar('clientId');",
+							"// let clientSecret = getvar('clientSecret');",
+							"// let scope = getvar('scope'); ",
+							"",
+							"var server = \"http://localhost:8080\";",
+							"var realm = \"bibliotheque\";",
+							"var clientCredentialsGrantType = \"client_credentials\";",
+							"var passwordGrantType = \"password\";",
+							"var clientId     = getvar('clientId');",
+							"var clientSecret = getvar('clientSecret');",
+							"var username = getvar('username');",
+							"var password = getvar('password');",
+							"var scope = \"openid%20profile%20email\"",
+							"",
+							"var url  = `${server}/auth/realms/${realm}/protocol/openid-connect/token`;",
+							"var data = `grant_type=${passwordGrantType}&client_id=${clientId}&client_secret=${clientSecret}&username=${username}&password=${password}&scope=${scope}`;",
+							"",
+							"pm.sendRequest({",
+							"    url: url,",
+							"    method: 'POST',",
+							"    header: { 'Content-Type': 'application/x-www-form-urlencoded'},",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: data",
+							"    }",
+							"},  function(err, response) {",
+							"    ",
+							"    var response_json = response.json();",
+							"    var token = response_json.access_token;",
+							"    pm.environment.set('accessToken', token);",
+							"    console.log(token);",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "c8c4db46-2a84-478f-bd50-b8f551a800c7",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"auth": {
+		"type": "oauth2",
+		"oauth2": [
+			{
+				"key": "accessToken",
+				"value": "{{accessToken}}",
+				"type": "string"
+			},
+			{
+				"key": "tokenType",
+				"value": "bearer",
+				"type": "string"
+			},
+			{
+				"key": "addTokenTo",
+				"value": "header",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "50e76049-11cf-4825-859d-80b33be4de4b",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "d14a2923-f60a-425e-9bbf-df550da86b1e",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "d389c20b-1205-48c3-b69b-4104b5472d01",
+			"key": "accessToken",
+			"value": null,
+			"type": "any"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
