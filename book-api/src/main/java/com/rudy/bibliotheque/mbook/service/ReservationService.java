@@ -27,7 +27,6 @@ import java.util.List;
 @Service
 public class ReservationService {
     private ReservationRepository reservationRepository;
-
     private UserInfoService userInfoService;
     private BookService bookService;
     private BorrowService borrowService;
@@ -41,16 +40,8 @@ public class ReservationService {
     }
 
 
-    public List<Reservation> getAllReservations() {
-        return reservationRepository.findAll();
-    }
-
     public List<Reservation> getAllReservationsBySearch(ReservationSearch reservationSearch) {
         return reservationRepository.findAllBySearch(reservationSearch);
-    }
-
-    public List<Reservation> getAllReservationsByBookId(Long id) {
-        return reservationRepository.findAllByBookId(id);
     }
 
     public Reservation getReservationById(Long id) {
@@ -65,6 +56,9 @@ public class ReservationService {
     public Reservation createNewReservation(ReservationCreateDTO reservationCreateDTO) {
         if (reservationCreateDTO.getBookId() == null) {
             throw new InvalidIdException("Book id has not been provided");
+        }
+        if (reservationCreateDTO.getUserId() == null) {
+            throw new InvalidIdException("User id has not been provided");
         }
 
         Book linkedBook = bookService.getBookById(reservationCreateDTO.getBookId());
@@ -82,7 +76,7 @@ public class ReservationService {
         }
         //Check if the user already got a reservation on the book
         boolean hasAlreadyAReservation = linkedBook.getOngoingReservations().stream()
-                .map(Reservation::getUserInfo).anyMatch(userInfo -> userInfo.getId().equals(ControllerUtil.getUserIdFromToken()));
+                .map(Reservation::getUserInfo).anyMatch(userInfo -> userInfo.getId().equals(reservationCreateDTO.getUserId()));
         if (hasAlreadyAReservation) {
             throw new ProhibitedActionException("You can't reserve the same book twice");
         }
@@ -150,7 +144,9 @@ public class ReservationService {
     @Transactional
     public void createLoanFromBookReservations(Book book) {
         if (!book.getOngoingReservations().isEmpty()) {
-            Reservation reservation = book.getOngoingReservations().stream().min(Comparator.comparing(Reservation::getReservationStartDate)).orElseThrow(() -> new IllegalStateException("No min date has been found"));
+            Reservation reservation = book.getOngoingReservations().stream()
+                    .min(Comparator.comparing(Reservation::getReservationStartDate))
+                    .orElseThrow(() -> new IllegalStateException("No min date has been found"));
             LoanCreateDTO loanCreateDTO = new LoanCreateDTO();
             loanCreateDTO.setUserId(reservation.getUserInfo().getId());
             loanCreateDTO.setBookId(book.getId());

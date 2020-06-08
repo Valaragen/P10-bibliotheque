@@ -31,9 +31,9 @@ public class BorrowService {
     @Autowired
     private ReservationService reservationService;
 
-    private ApplicationPropertiesConfig appProperties;
     private CopyService copyService;
     private UserInfoService userInfoService;
+    private ApplicationPropertiesConfig appProperties;
     private KeycloakRestTemplate keycloakRestTemplate;
     private BorrowRepository borrowRepository;
     private EmailService emailService;
@@ -167,7 +167,7 @@ public class BorrowService {
             throw new ProhibitedActionException("This loan is already returned");
         }
 
-        if (borrowAdditionalInfos.getStateAfterBorrow() != null) {
+        if (borrowAdditionalInfos != null && borrowAdditionalInfos.getStateAfterBorrow() != null) {
             borrow.setStateAfterBorrow(borrowAdditionalInfos.getStateAfterBorrow());
         } else {
             borrow.setStateAfterBorrow(borrow.getStateBeforeBorrow());

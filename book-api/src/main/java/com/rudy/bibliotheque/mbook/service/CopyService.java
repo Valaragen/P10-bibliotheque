@@ -25,10 +25,6 @@ public class CopyService {
         return copyRepository.findById(code).orElse(null);
     }
 
-    public Copy getCopyByBookId(Long id) {
-        return copyRepository.findByBookId(id).orElse(null);
-    }
-
     public Copy saveCopy(Copy copy) {
         return copyRepository.save(copy);
     }

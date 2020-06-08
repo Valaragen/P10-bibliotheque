@@ -66,6 +66,7 @@ public class CopyController {
             throw new NotFoundException("Can't find book with id " + copyCreateDTO.getBookId());
         }
         newCopy.setCode(copyService.generateCode());
+        newCopy.setBook(linkedBook);
 
         Book currentBook = newCopy.getBook();
         newCopy.getBook().setCopyNumber(currentBook.getCopyNumber() + 1);
