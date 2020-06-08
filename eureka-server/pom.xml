@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.rudy.bibliotheque</groupId>
 	<artifactId>eureka-server</artifactId>
-	<version>1.1.0-SNAPSHOT</version>
+	<version>1.1.1-SNAPSHOT</version>
 	<name>eureka-server</name>
 	<description>Demo project for Spring Boot</description>
 
