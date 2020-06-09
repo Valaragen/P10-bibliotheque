@@ -13,12 +13,12 @@
         <div class="col-md-8" th:case="'404'">
             <h1 class="h1">Cette page n'existe pas</h1>
             <p class="h5">La page que vous recherchez semble introuvable</p>
-            <a class="btn btn-primary" th:href="@{/static}">Retourner à l'accueil</a>
+            <a class="btn btn-primary" th:href="@{/}">Retourner à l'accueil</a>
         </div>
         <div class="col-md-8" th:case="*">
             <h1>Oops</h1>
             <p class="h6">Une erreur s'est produite</p>
-            <a class="btn btn-primary" th:href="@{/static}">Retourner à l'accueil</a>
+            <a class="btn btn-primary" th:href="@{/}">Retourner à l'accueil</a>
         </div>
     </div>
     <table sec:authorize="hasRole('ROLE_USER')">

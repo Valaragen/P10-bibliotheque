@@ -36,7 +36,8 @@
             </div>
             <div class="col-auto form-group">
                 <button class="btn btn-warning d-block" type="button" data-toggle="collapse"
-                        data-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter"><i class="fas fa-plus"></i>
+                        data-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter"><i
+                        class="fas fa-plus"></i>
                     <i class="fas fa-chevron-down fa-xs ml-2 d-none d-md-inline-block"></i></button>
             </div>
 
@@ -72,11 +73,13 @@
                     <div class="card-title">
                         <h5 class="d-inline-block" th:text="${book.name}">Card title</h5>
                         <small class="ml-3 d-inline-block text-muted" th:text="${book.author}"></small>
-                        <span class="badge badge-primary ml-3" th:text="${'NB exemplaire(s) disponibles: ' + book.availableCopyNumber}">Primary</span>
+                        <span class="badge badge-primary ml-3"
+                              th:text="${'NB exemplaire(s) disponibles: ' + book.availableCopyNumber}">Primary</span>
                     </div>
                     <p class="card-text text-justify text-4-line-truncate" th:text="${book.description}"></p>
                     <a class="btn btn-primary" th:href="@{/books/{id}(id=${book.id})}" role="button">Consulter</a>
-                    <form sec:authorize="isAuthenticated()" class="d-inline-block" th:id="${'loan-btn-' + book.id}" th:if="${book.availableCopyNumber > 0 && !currentUserBorrowedBookIds.contains(book.id)}"
+                    <form sec:authorize="isAuthenticated()" class="d-inline-block" th:id="${'loan-btn-' + book.id}"
+                          th:if="${book.availableCopyNumber > 0 && !currentUserBorrowedBookIds.contains(book.id)}"
                           th:action="@{/loans/my-loans}" method="POST">
                         <input class="form-control"
                                id="bookId" type="hidden" th:value="${book.id}" name="bookId"
@@ -85,7 +88,8 @@
                             Emprunter
                         </button>
                     </form>
-                    <form sec:authorize="isAuthenticated()" class="d-inline-block" th:id="${'reserve-btn-' + book.id}" th:if="${book.availableCopyNumber <= 0 && !currentUserBorrowedBookIds.contains(book.id) && !currentUserReservedBookIds.contains(book.id) && book.getCopyNumber()*2 > book.getOngoingReservations().size()}"
+                    <form sec:authorize="isAuthenticated()" class="d-inline-block" th:id="${'reserve-btn-' + book.id}"
+                          th:if="${book.availableCopyNumber <= 0 && !currentUserBorrowedBookIds.contains(book.id) && !currentUserReservedBookIds.contains(book.id) && book.getCopyNumber()*2 > book.getOngoingReservations().size()}"
                           th:action="@{/reservations/my-reservations}" method="POST">
                         <input class="form-control"
                                id="reserveBookId" type="hidden" th:value="${book.id}" name="bookId"
@@ -94,14 +98,23 @@
                             Réserver
                         </button>
                     </form>
-                    <div th:if="${book.availableCopyNumber <= 0 && !currentUserBorrowedBookIds.contains(book.id) && !currentUserReservedBookIds.contains(book.id) && book.getCopyNumber()*2 > book.getOngoingReservations().size()}">
-                        <strong class="mt-3 d-block" th:text="${'Nombre de reservations : ' + book.getOngoingReservations().size()}"></strong>
-                        <strong class="mt-1 d-block" th:if="${book.getNearestReturnDate() != null}" th:text="${'Date de retour prévue du prochain ouvrage : ' + #dates.format(book.getNearestReturnDate(), 'dd/MM/yyyy')}"></strong>
-                        <strong class="mt-1 d-block" th:if="${book.getNearestReturnDate() == null}" th:text="${'Date de retour prévue du prochain ouvrage : Aucune date précise disponible'}"></strong>
+                    <div sec:authorize="isAuthenticated()">
+                        <div th:if="${book.availableCopyNumber <= 0 && !currentUserBorrowedBookIds.contains(book.id) && !currentUserReservedBookIds.contains(book.id) && book.getCopyNumber()*2 > book.getOngoingReservations().size()}">
+                            <strong class="mt-3 d-block"
+                                    th:text="${'Nombre de reservations : ' + book.getOngoingReservations().size()}"></strong>
+                            <strong class="mt-1 d-block" th:if="${book.getNearestReturnDate() != null}"
+                                    th:text="${'Date de retour prévue du prochain ouvrage : ' + #dates.format(book.getNearestReturnDate(), 'dd/MM/yyyy')}"></strong>
+                            <strong class="mt-1 d-block" th:if="${book.getNearestReturnDate() == null}"
+                                    th:text="${'Date de retour prévue du prochain ouvrage : Aucune date précise disponible'}"></strong>
+                        </div>
+                        <strong class="mt-3 d-block" th:if="${currentUserBorrowedBookIds.contains(book.id)}">Vous avez
+                            un emprunt en cours de ce livre</strong>
+                        <strong class="mt-3 d-block" th:if="${currentUserReservedBookIds.contains(book.id)}">Vous avez
+                            une reservation en cours pour ce livre</strong>
+                        <strong class="mt-3 d-block"
+                                th:if="${book.getCopyNumber()*2 <= book.getOngoingReservations().size()}">Le nombre de
+                            reservations maximum à été atteint sur ce livre</strong>
                     </div>
-                    <strong class="mt-3 d-block" th:if="${currentUserBorrowedBookIds.contains(book.id)}">Vous avez un emprunt en cours de ce livre</strong>
-                    <strong class="mt-3 d-block" th:if="${currentUserReservedBookIds.contains(book.id)}">Vous avez une reservation en cours pour ce livre</strong>
-                    <strong class="mt-3 d-block" th:if="${book.getCopyNumber()*2 > book.getOngoingReservations().size()}">Le nombre de reservations maximum à été atteint sur ce livre</strong>
                 </div>
             </div>
         </div>
