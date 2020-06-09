@@ -63,7 +63,7 @@ public class BookController {
         for (BookDTO book : books) {
             if (book.getAvailableCopyNumber() <= 0)
                 book.getCopies().stream()
-                        .filter((copy) -> !copy.getOngoingBorrow().isEmpty() && copy.getOngoingBorrow().get(0).getLoanEndDate().after(new Date()))
+                        .filter((copy) -> !copy.getOngoingBorrow().isEmpty() && copy.getOngoingBorrow().get(0).getLoanEndDate() != null && copy.getOngoingBorrow().get(0).getLoanEndDate().after(new Date()))
                         .min(Comparator.comparing((copy) -> copy.getOngoingBorrow().get(0).getLoanEndDate())).ifPresent(nextCopyReturn -> book.setNearestReturnDate(nextCopyReturn.getOngoingBorrow().get(0).getLoanEndDate()));
         }
         model.addAttribute("books", books);
