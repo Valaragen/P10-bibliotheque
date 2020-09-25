@@ -88,7 +88,7 @@ Non integré sur ce repository git, keycloak est necessaire au fonctionnement de
    3. **Depuis postman**, lancez un des scénarios contenu dans le dossier **"integration test"**
 ## Diagrammes
 ### Base de donnée de l'api
-![](https://github.com/Valaragen/bibliotheque/blob/master/desc/class_diagram.JPG)  
+![](https://github.com/Valaragen/P10-bibliotheque/blob/master/desc/class_diagram.JPG)  
 
 ## Aperçus
 ### Page de login
